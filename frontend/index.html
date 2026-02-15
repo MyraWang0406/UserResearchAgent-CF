@@ -100,6 +100,9 @@
     }
     .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); border: 1px solid rgba(47,107,255,.35); font-size: 12px; margin-right: 6px; }
     .hint { color: var(--text-sub); font-size: 12px; margin-top: 8px; }
+    .growth-checkboxes { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 6px; }
+    .growth-checkboxes .growth-option { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-main); cursor: pointer; }
+    .growth-checkboxes input[type=checkbox] { width: auto; margin: 0; }
     .small { font-size: 12px; color: var(--text-sub); }
     footer { padding: 22px 40px; border-top: 1px solid var(--silver-border); color: var(--text-sub); font-size: 13px; }
     a { color: var(--accent-main); text-decoration: none; }
@@ -213,8 +216,8 @@
       <select id="stage"></select>
 
       <label id="lblGrowth">Growth Drivers (multi-select, ordered)</label>
-      <textarea id="growth" placeholder="e.g. Marketing-Led Growth (MLG)&#10;Product-Led Growth (PLG)"></textarea>
-      <div class="hint" id="hintGrowth">Use full names, not abbreviations only.</div>
+      <div id="growthOptions" class="growth-checkboxes"></div>
+      <div class="hint" id="hintGrowth">Select one or more (order by priority).</div>
 
       <label id="lblPositioning">Business Positioning</label>
       <select id="positioning"></select>
@@ -468,17 +471,25 @@
         { v: "new_biz", en: "New incubation: direction unclear, explore users & scenarios", zh: "新孵化/新业务：方向未完全清晰，需要探索用户与场景" },
         { v: "old_growth", en: "Old biz growth: new approach uncertain", zh: "旧业务新增长：服务于老业务增长，但新方式效果不确定" },
         { v: "old_supply", en: "Mature supply, find new users & expression", zh: "旧供给找新用户：供给相对成熟，需要找到新目标人群与新表达" },
-        { v: "validated", en: "Validated fit, scale replication", zh: "已验证价值：已有明确需求/供给匹配，需要规模化复制与扩张（做了大概率有效）" },
-        { v: "new_market", en: "New supply / new market", zh: "新供给/新交易场：为一类用户新需求构建新的交易场/新产品线" }
+        { v: "validated", en: "Proven value: supply-demand fit confirmed, room for efficiency gains; break down by scenario and go deep on problem areas", zh: "已论证价值：已确认供需匹配成立，效率有优化空间，需精细化拆场景定位问题深耕" },
+        { v: "new_market", en: "Existing users, new supply/market: discover unmet needs of existing users, expand supply chain or build/optimize new marketplace", zh: "旧用户新供给/新交易场：发现历史用户有别的需求待满足，为此拓展供应链/搭建优化新交易场" }
       ],
       goalOptions: [
         { v: "first_order", en: "Increase first-order conversion", zh: "提升首单购买转化率" },
         { v: "repurchase", en: "Increase repurchase conversion", zh: "提升复购转化率" },
         { v: "refund", en: "Reduce refund/return rate", zh: "降低退款/退货率" },
-        { v: "lead_close", en: "Lead → close conversion", zh: "提升线索→成交转化率" }
+        { v: "lead_close", en: "Lead → close conversion", zh: "提升线索→成交转化率" },
+        { v: "leads_hva", en: "Filter/clean quality leads; increase High Value Action (HVA) count", zh: "筛选清洗有效线索 提升高价值行为(HVA)数" }
       ],
+      growthOptions: [
+        { v: "mlg", en: "Marketing-Led Growth (MLG)", zh: "营销驱动增长(MLG)" },
+        { v: "olg", en: "Operations-Led Growth (OLG)", zh: "运营驱动增长(OLG)" },
+        { v: "plg", en: "Product-Led Growth (PLG)", zh: "产品驱动增长(PLG)" },
+        { v: "slg", en: "Sales-Led Growth (SLG)", zh: "销售驱动增长(SLG)" },
+        { v: "tlg", en: "Technology-Led Growth (TLG)", zh: "技术驱动增长(TLG)" }
+      ],
+      hintGrowth: "Select one or more (order by priority).",
       marketPlaceholder: "e.g. North America / Europe / SEA / Domestic",
-      growthPlaceholder: "e.g. Marketing-Led Growth (MLG)\nProduct-Led Growth (PLG)",
       problemPlaceholder: "e.g. CAC up, CTR ok but add-to-cart low; users say 'can't tell difference' — high cart abandonment",
       constraintsPlaceholder: "e.g. results in 2 weeks; no minors; no raw audio storage; mid budget",
       traceTopicPlaceholder: "e.g. fintech",
@@ -501,7 +512,7 @@
       lblGoal: "本次目标",
       lblProblem: "核心问题（尽量包含事实/数据）",
       lblConstraints: "约束（可选）",
-      hintGrowth: "提示：不要只写缩写。请用中文意思（括号里写英文全称）。",
+      hintGrowth: "不要只写缩写。请勾选一项或多项（按主次排序）。",
       btnRunA: "运行 A：诊断 → 研究方案",
       btnRunB: "运行 B：生成访谈大纲 + 问卷草案",
       hintTemplates: "模板下载：",
@@ -605,15 +616,24 @@
         { v: "new_biz", en: "New incubation: direction unclear, explore users & scenarios", zh: "新孵化/新业务：方向未完全清晰，需要探索用户与场景" },
         { v: "old_growth", en: "Old biz growth: new approach uncertain", zh: "旧业务新增长：服务于老业务增长，但新方式效果不确定" },
         { v: "old_supply", en: "Mature supply, find new users & expression", zh: "旧供给找新用户：供给相对成熟，需要找到新目标人群与新表达" },
-        { v: "validated", en: "Validated fit, scale replication", zh: "已验证价值：已有明确需求/供给匹配，需要规模化复制与扩张（做了大概率有效）" },
-        { v: "new_market", en: "New supply / new market", zh: "新供给/新交易场：为一类用户新需求构建新的交易场/新产品线" }
+        { v: "validated", en: "Proven value: supply-demand fit confirmed, room for efficiency gains; break down by scenario and go deep on problem areas", zh: "已论证价值：已确认供需匹配成立，效率有优化空间，需精细化拆场景定位问题深耕" },
+        { v: "new_market", en: "Existing users, new supply/market: discover unmet needs of existing users, expand supply chain or build/optimize new marketplace", zh: "旧用户新供给/新交易场：发现历史用户有别的需求待满足，为此拓展供应链/搭建优化新交易场" }
       ],
       goalOptions: [
         { v: "first_order", en: "Increase first-order conversion", zh: "提升首单购买转化率" },
         { v: "repurchase", en: "Increase repurchase conversion", zh: "提升复购转化率" },
         { v: "refund", en: "Reduce refund/return rate", zh: "降低退款/退货率" },
-        { v: "lead_close", en: "Lead → close conversion", zh: "提升线索→成交转化率" }
+        { v: "lead_close", en: "Lead → close conversion", zh: "提升线索→成交转化率" },
+        { v: "leads_hva", en: "Filter/clean quality leads; increase High Value Action (HVA) count", zh: "筛选清洗有效线索 提升高价值行为(HVA)数" }
       ],
+      growthOptions: [
+        { v: "mlg", en: "Marketing-Led Growth (MLG)", zh: "营销驱动增长(MLG)" },
+        { v: "olg", en: "Operations-Led Growth (OLG)", zh: "运营驱动增长(OLG)" },
+        { v: "plg", en: "Product-Led Growth (PLG)", zh: "产品驱动增长(PLG)" },
+        { v: "slg", en: "Sales-Led Growth (SLG)", zh: "销售驱动增长(SLG)" },
+        { v: "tlg", en: "Technology-Led Growth (TLG)", zh: "技术驱动增长(TLG)" }
+      ],
+      hintGrowth: "不要只写缩写。请勾选一项或多项（按主次排序）。",
       marketPlaceholder: "例如：北美 / 欧洲 / 东南亚 / 国内",
       growthPlaceholder: "例如：营销驱动增长（Marketing-Led Growth, MLG）\n产品驱动增长（Product-Led Growth, PLG）",
       problemPlaceholder: "例如：买量成本上升，点击不差但加购率低；用户经常说'看不懂差别/不敢买'，弃购率高。",
@@ -675,7 +695,11 @@
     const stageOpts = t.stageOptions || [];
     stageSel.innerHTML = stageOpts.map(o => `<option value="${o.v}">${o[LANG] || o.en}</option>`).join("");
     document.getElementById("lblGrowth").textContent = t.lblGrowth;
-    document.getElementById("growth").placeholder = t.growthPlaceholder || "";
+    const growthContainer = document.getElementById("growthOptions");
+    const growthOpts = t.growthOptions || [];
+    const checkedGrowth = new Set(Array.from(growthContainer.querySelectorAll("input[type=checkbox]")).filter(cb => cb.checked).map(cb => cb.value));
+    growthContainer.innerHTML = growthOpts.map(o => `<label class="growth-option"><input type="checkbox" name="growth" value="${o.v}" id="growth_${o.v}">${o[LANG] || o.en}</label>`).join("");
+    growthOpts.forEach(o => { const cb = document.getElementById("growth_"+o.v); if (cb && checkedGrowth.has(o.v)) cb.checked = true; });
     document.getElementById("lblPositioning").textContent = t.lblPositioning;
     const posSel = document.getElementById("positioning");
     const posOpts = t.positioningOptions || [];
@@ -765,13 +789,14 @@
   }
 
   function readInput(){
-    const growthText = document.getElementById('growth').value || "";
-    const growthList = growthText.split("\n").map(x=>x.trim()).filter(Boolean);
+    const t = I18N[LANG];
+    const growthOpts = t.growthOptions || [];
+    const growthList = growthOpts.filter(o => document.getElementById("growth_"+o.v)?.checked).map(o => o[LANG] || o.en);
     return {
       industry: (()=>{ const s=document.getElementById('industry'); return s.value ? (s.options[s.selectedIndex]?.text || s.value) : (LANG === 'zh' ? "未填写" : "N/A"); })(),
       market: document.getElementById('market').value || (LANG === 'zh' ? "未填写" : "N/A"),
       company_stage: document.getElementById('stage').value,
-      growth_driver: growthList.length ? growthList : [LANG === 'zh' ? "营销驱动增长（Marketing-Led Growth, MLG）" : "Marketing-Led Growth (MLG)"],
+      growth_driver: growthList.length ? growthList : [LANG === 'zh' ? "营销驱动增长(MLG)" : "Marketing-Led Growth (MLG)"],
       biz_positioning: document.getElementById('positioning').value,
       core_problem: document.getElementById('problem').value,
       constraints: document.getElementById('constraints').value,
