@@ -172,7 +172,7 @@
     .conflict-demo-btn:disabled { opacity: 0.7; cursor: not-allowed; }
     .conflict-history-card .proof-badge { background: var(--accent-main); color: #fecaca; font-size: 11px; padding: 4px 10px; border-radius: 999px; }
     .conflict-history-card ul { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: var(--text-main); }
-    .contact-badge { position: fixed; bottom: 12px; right: 12px; background: rgba(60,60,60,0.88); color: #fff; font-family: "Microsoft YaHei", "微软雅黑", sans-serif; font-size: 11px; padding: 5px 10px; border-radius: 6px; z-index: 9998; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    .contact-badge { position: fixed; bottom: 12px; right: 12px; background: var(--accent-main); color: #fff; font-family: "Microsoft YaHei", "微软雅黑", sans-serif; font-size: 11px; padding: 5px 10px; border-radius: 6px; z-index: 9998; white-space: nowrap; box-shadow: 0 2px 6px rgba(239,68,68,0.3); border: 1px solid var(--accent-text); }
   </style>
 </head>
 <body>
@@ -247,9 +247,9 @@
       <h2 id="outTitle">Output (Actionable Deliverables)</h2>
       <div class="output" id="out">Waiting for input…</div>
       <div style="margin-top:12px;">
-        <span class="pill">Evidence-first</span>
-        <span class="pill">Actionable + Verifiable</span>
-        <span class="pill">Read-only templates</span>
+        <span class="pill" id="pill1">Evidence-first</span>
+        <span class="pill" id="pill2">Actionable + Verifiable</span>
+        <span class="pill" id="pill3">Read-only templates</span>
       </div>
     </section>
   </div>
@@ -336,15 +336,15 @@
 </main>
 
 <footer>
-  <div class="pill">A: Diagnosis</div>
-  <div class="pill">B: Research</div>
-  <div class="pill">C: Decision Memory</div>
+  <div class="pill" id="footerPillA">A: Diagnosis</div>
+  <div class="pill" id="footerPillB">B: Research</div>
+  <div class="pill" id="footerPillC">C: Decision Memory</div>
   <p style="margin-top:10px;" id="footerNote">
     This demo shows how user research is agentified for conversion uplift. No external scraping.
   </p>
 </footer>
 
-<div class="contact-badge">联系作者 myrawzm0406@163.com 微信 15301052620</div>
+<div class="contact-badge" id="contactBadge">Contact: myrawzm0406@163.com | WeChat 15301052620</div>
 
 <script>
   const I18N = {
@@ -372,6 +372,12 @@
       linkSetApi: "Set API address",
       outTitle: "Output (Actionable Deliverables)",
       outWaiting: "Waiting for input…",
+      pill1: "Evidence-first",
+      pill2: "Actionable + Verifiable",
+      pill3: "Read-only templates",
+      footerPillA: "A: Diagnosis",
+      footerPillB: "B: Research",
+      footerPillC: "C: Decision Memory",
       tabCOpTitle: "Input / Actions",
       btnLoadGraph: "Load Trace Graph",
       btnLoadDec: "Load Decisions/Snapshots",
@@ -442,11 +448,10 @@
       conflictBullet1: "Round 2 falsified speed hypothesis",
       conflictBullet2: "Round 3 recall prevented rollback",
       industryOptions: [
-        { v: "tob_customization", en: "ToB Customization", zh: "ToB 定制化" },
         { v: "tob_saas", en: "ToB SaaS", zh: "ToB SaaS" },
-        { v: "toc_single", en: "ToC Single-sided App (e.g., tools/games)", zh: "ToC 单边产品（如工具/游戏）" },
-        { v: "toc_platform", en: "ToC Two-sided Platform (e.g., marketplace/content/social)", zh: "ToC 双边平台（如电商撮合/内容平台/社交平台）" },
-        { v: "agency", en: "Agency (e.g., MCN/talent management/influencer incubator)", zh: "Agency（如MCN/达人艺人经纪/网红孵化）" }
+        { v: "toc_app", en: "ToC App (single-sided product: tools/games)", zh: "ToC App 单边产品（如工具/游戏）" },
+        { v: "toc_platform", en: "ToC Platform (two-sided: e-commerce marketplace/content/social)", zh: "ToC 双边平台（如电商撮合交易平台/内容平台/社交平台）" },
+        { v: "agency", en: "Agency (MCN / talent management / influencer incubation)", zh: "Agency（如 MCN 达人艺人经纪 / 网红孵化）" }
       ],
       stageOptions: [
         { v: "0-1", en: "0-1 (Infrastructure/Demo, validate feasibility)", zh: "0-1（基建/做Demo，尽快验证可行性）" },
@@ -473,7 +478,8 @@
       problemPlaceholder: "e.g. CAC up, CTR ok but add-to-cart low; users say 'can't tell difference' — high cart abandonment",
       constraintsPlaceholder: "e.g. results in 2 weeks; no minors; no raw audio storage; mid budget",
       traceTopicPlaceholder: "e.g. fintech",
-      traceStagePlaceholder: "e.g. 1-10"
+      traceStagePlaceholder: "e.g. 1-10",
+      contactBadge: "Contact: myrawzm0406@163.com | WeChat 15301052620"
     },
     zh: {
       pageTitle: "用户研究 Agent · 对话 OS",
@@ -483,7 +489,7 @@
       tabC: "C. Decision Memory 可视化（Trace Graph）",
       formTitle: "输入（给Agent）",
       formTitleB: "输入（沿用A段信息）",
-      lblIndustry: "ToB 定制化",
+      lblIndustry: "ToB 定制类型",
       lblMarket: "目标市场",
       lblStage: "公司阶段",
       lblGrowth: "增长驱动方式（可多选，按主次排序）",
@@ -499,6 +505,12 @@
       linkSetApi: "设置API地址",
       outTitle: "输出（可执行交付物）",
       outWaiting: "等待输入…",
+      pill1: "证据优先",
+      pill2: "可执行 + 可验证",
+      pill3: "只读模板",
+      footerPillA: "A: 诊断",
+      footerPillB: "B: 研究",
+      footerPillC: "C: Decision Memory",
       tabCOpTitle: "输入 / 操作",
       btnLoadGraph: "加载 Trace Graph",
       btnLoadDec: "加载最新 Decisions/Snapshots",
@@ -600,7 +612,8 @@
       problemPlaceholder: "例如：买量成本上升，点击不差但加购率低；用户经常说'看不懂差别/不敢买'，弃购率高。",
       constraintsPlaceholder: "例如：两周内要出结果；不能触达未成年人；不能存储原始音频；预算中等。",
       traceTopicPlaceholder: "例如：fintech",
-      traceStagePlaceholder: "例如：1-10"
+      traceStagePlaceholder: "例如：1-10",
+      contactBadge: "联系作者 myrawzm0406@163.com 微信 15301052620"
     }
   };
 
@@ -620,6 +633,13 @@
   const API_KEY = "admin123";
   let visNetworkInstance = null;
   let lastTraceGraphData = null;
+
+  function t(key) {
+    const dict = I18N[LANG];
+    if (dict && dict[key] !== undefined) return dict[key];
+    return I18N.en[key] !== undefined ? I18N.en[key] : key;
+  }
+  function renderLang() { applyLang(); }
 
   function setLang(lang) {
     LANG = lang;
@@ -668,6 +688,13 @@
     document.getElementById("apiBaseLabel").textContent = t.apiBaseLabel;
     document.getElementById("linkSetApi").textContent = t.linkSetApi;
     document.getElementById("outTitle").textContent = t.outTitle;
+    const el = document.getElementById("pill1"); if (el) el.textContent = t.pill1;
+    const el2 = document.getElementById("pill2"); if (el2) el2.textContent = t.pill2;
+    const el3 = document.getElementById("pill3"); if (el3) el3.textContent = t.pill3;
+    const fpA = document.getElementById("footerPillA"); if (fpA) fpA.textContent = t.footerPillA;
+    const fpB = document.getElementById("footerPillB"); if (fpB) fpB.textContent = t.footerPillB;
+    const fpC = document.getElementById("footerPillC"); if (fpC) fpC.textContent = t.footerPillC;
+    const contactBadgeEl = document.getElementById("contactBadge"); if (contactBadgeEl) contactBadgeEl.textContent = t.contactBadge;
     document.getElementById("tabCOpTitle").textContent = t.tabCOpTitle;
     document.getElementById("btnLoadGraph").textContent = t.btnLoadGraph;
     document.getElementById("btnLoadDec").textContent = t.btnLoadDec;
