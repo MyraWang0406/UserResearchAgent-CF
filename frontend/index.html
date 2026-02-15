@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Decision Memory · User Research Agent</title>
+  <title>User Research Agent · Conversation OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <style>
     :root {
       --blue-main: #2f6bff;
       --blue-soft: #eaf0ff;
+      --accent-main: #ef4444;
+      --accent-soft: #fee2e2;
+      --accent-text: #991b1b;
       --silver: #f4f6f8;
       --silver-border: #d9dee5;
       --text-main: #1f2937;
@@ -28,11 +31,11 @@
       color: var(--text-main);
     }
     header { padding: 28px 40px 18px; border-bottom: 1px solid var(--silver-border); position: relative; }
-    header h1 { margin: 0; font-size: 26px; color: var(--blue-main); }
+    header h1 { margin: 0; font-size: 26px; color: var(--accent-main); }
     header p { margin-top: 6px; color: var(--text-sub); font-size: 14px; }
     .lang-toggle {
       position: absolute; top: 28px; right: 40px;
-      display: flex; gap: 4px; font-size: 13px;
+      display: flex; gap: 6px; font-size: 13px; align-items: center;
     }
     .lang-btn {
       padding: 6px 12px; border-radius: 8px; border: 1px solid var(--silver-border);
@@ -95,7 +98,7 @@
       white-space: pre-wrap;
       min-height: 420px;
     }
-    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background: var(--blue-soft); color: var(--blue-main); font-size: 12px; margin-right: 6px; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); border: 1px solid rgba(239,68,68,.35); font-size: 12px; margin-right: 6px; }
     .hint { color: var(--text-sub); font-size: 12px; margin-top: 8px; }
     .small { font-size: 12px; color: var(--text-sub); }
     footer { padding: 22px 40px; border-top: 1px solid var(--silver-border); color: var(--text-sub); font-size: 13px; }
@@ -130,8 +133,8 @@
     .comparison-col ul { margin: 0; padding-left: 18px; }
     .comparison-col li { margin-bottom: 6px; }
     .comparison-note { margin-top: 10px; font-size: 12px; color: var(--text-sub); font-style: italic; }
-    .rules-card { background: #fff; border: 1px solid var(--blue-main); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    .rules-card h3 { margin: 0 0 12px; font-size: 15px; color: var(--blue-main); }
+    .rules-card { background: #fff; border: 1px solid var(--accent-main); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .rules-card h3 { margin: 0 0 12px; font-size: 15px; color: var(--accent-main); }
     .rule-item { display: flex; gap: 10px; margin-bottom: 14px; font-size: 13px; line-height: 1.5; }
     .rule-item:last-child { margin-bottom: 0; }
     .rule-icon { flex-shrink: 0; font-size: 16px; }
@@ -154,22 +157,22 @@
     .btn-sm { margin-top: 8px; margin-right: 8px; padding: 8px 14px; font-size: 13px; }
     .err-msg { color: var(--bad); font-size: 13px; padding: 12px; }
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-    .toast { background: #fff; border: 1px solid var(--blue-main); border-left: 4px solid var(--bad); border-radius: 12px; padding: 16px 20px; min-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); display: flex; justify-content: space-between; gap: 12px; animation: toastIn 0.25s ease; }
+    .toast { background: #fff; border: 1px solid var(--accent-main); border-left: 4px solid var(--accent-main); border-radius: 12px; padding: 16px 20px; min-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); display: flex; justify-content: space-between; gap: 12px; animation: toastIn 0.25s ease; }
     .toast-body { flex: 1; }
-    .toast-title { font-weight: 600; color: var(--bad); margin-bottom: 6px; font-size: 14px; }
+    .toast-title { font-weight: 600; color: var(--accent-main); margin-bottom: 6px; font-size: 14px; }
     .toast-msg { font-size: 13px; color: var(--text-main); line-height: 1.5; }
     .toast-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-sub); padding: 0 4px; line-height: 1; }
     .toast-close:hover { color: var(--text-main); }
     @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     .ui-event-log { background: #fff; border: 1px dashed var(--silver-border); border-radius: 10px; padding: 12px; font-size: 12px; font-family: monospace; white-space: pre-wrap; max-height: 160px; overflow-y: auto; margin-top: 12px; color: var(--text-sub); }
-    .conflict-history-card { background: #fff; border: 1px solid var(--blue-main); border-radius: 14px; padding: 16px; margin-top: 14px; }
-    .conflict-history-card h4 { margin: 0 0 10px; font-size: 15px; color: var(--blue-main); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-    .conflict-demo-btn { padding: 6px 12px; font-size: 12px; border-radius: 10px; border: 1px solid var(--silver-border); background: var(--blue-soft); color: var(--blue-main); cursor: pointer; }
-    .conflict-demo-btn:hover:not(:disabled) { filter: brightness(0.98); background: #d4e0ff; }
+    .conflict-history-card { background: #fff; border: 1px solid var(--accent-main); border-radius: 14px; padding: 16px; margin-top: 14px; }
+    .conflict-history-card h4 { margin: 0 0 10px; font-size: 15px; color: var(--accent-main); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .conflict-demo-btn { padding: 6px 12px; font-size: 12px; border-radius: 10px; border: 1px solid rgba(239,68,68,.35); background: var(--accent-soft); color: var(--accent-text); cursor: pointer; }
+    .conflict-demo-btn:hover:not(:disabled) { filter: brightness(0.98); background: #fecaca; }
     .conflict-demo-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-    .conflict-history-card .proof-badge { background: var(--blue-main); color: #c7d7fe; font-size: 11px; padding: 4px 10px; border-radius: 999px; }
+    .conflict-history-card .proof-badge { background: var(--accent-main); color: #fecaca; font-size: 11px; padding: 4px 10px; border-radius: 999px; }
     .conflict-history-card ul { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: var(--text-main); }
-    .contact-badge { position: fixed; bottom: 16px; right: 16px; background: rgba(60,60,60,0.88); color: #fff; font-family: "Microsoft YaHei", "微软雅黑", sans-serif; font-size: 12px; padding: 8px 14px; border-radius: 8px; z-index: 9998; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .contact-badge { position: fixed; bottom: 12px; right: 12px; background: rgba(60,60,60,0.88); color: #fff; font-family: "Microsoft YaHei", "微软雅黑", sans-serif; font-size: 11px; padding: 5px 10px; border-radius: 6px; z-index: 9998; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
   </style>
 </head>
 <body>
@@ -212,7 +215,7 @@
         <option value="1-10（已出Demo/早期产品，快速找客户验证商业闭环）">1-10（已出Demo/早期产品，快速找客户验证商业闭环）</option>
         <option value="10-100（已跑通交易/收入，需规模化增长与效率提升）">10-100（已跑通交易/收入，需规模化增长与效率提升）</option>
         <option value="成熟期（交易规模/利润稳定，追求更高效率或新增长点）">成熟期（交易规模/利润稳定，追求更高效率或新增长点）</option>
-        <option value="探索创新（成熟业务之外的新业务孵化/战略布局）">探索创新（成熟业务之外的新业务孵化/战略布局）</option>
+        <option value="探索创新（成熟业务之外：新业务战略布局/孵化）">探索创新（成熟业务之外：新业务战略布局/孵化）</option>
       </select>
 
       <label id="lblGrowth">Growth Drivers (multi-select, ordered)</label>
@@ -318,7 +321,7 @@
           <span id="graphPlaceholderText">Click "Load Trace Graph" to fetch nodes/edges and render.</span>
         </div>
         <div class="conflict-history-card" id="conflictHistoryCard">
-          <h4><span>Conflict History <span class="proof-badge">Memory-constrained</span></span><button class="conflict-demo-btn" id="btnConflictDemo" onclick="runConflictDemo()" data-i18n="btnConflictDemo">Run Conflict Demo</button></h4>
+          <h4><span id="conflictHistoryTitle">Conflict History</span> <span class="proof-badge" id="conflictHistoryBadge">Memory-constrained</span><button class="conflict-demo-btn" id="btnConflictDemo" onclick="runConflictDemo()" data-i18n="btnConflictDemo">Run Conflict Demo</button></h4>
           <ul id="conflictHistoryList">
             <li>Round 2 falsified speed hypothesis</li>
             <li>Round 3 recall prevented rollback</li>
@@ -333,7 +336,7 @@
         </div>
         <div class="ui-event-log" id="uiEventLog">No events yet.</div>
         <div class="comparison-module">
-          <h3 id="comparisonTitle" style="grid-column:1/-1; margin:0 0 8px; font-size:15px; color:var(--blue-main);">Why this decision requires memory</h3>
+          <h3 id="comparisonTitle" style="grid-column:1/-1; margin:0 0 8px; font-size:15px; color:var(--accent-main);">Why this decision requires memory</h3>
           <div class="comparison-col">
             <h4 id="comparisonWithTitle">With Memory Recall</h4>
             <ul id="comparisonWithList"></ul>
@@ -363,7 +366,7 @@
 <script>
   const I18N = {
     en: {
-      pageTitle: "Decision Memory · User Research Agent",
+      pageTitle: "User Research Agent · Conversation OS",
       pageSubtitle: "B2B pre-sales diagnosis → Research plan routing → Actionable assets + validation metrics (no scraping)",
       tabA: "A. B2B Diagnosis (Pre-sales)",
       tabB: "B. User Research Delivery (Qual + Quant)",
@@ -445,10 +448,19 @@
       toastNetworkErrorBody: "Cannot reach backend. Check API_BASE.",
       logErrorNetwork: "Network error during 400 demo",
       toastRefreshFailed: "Refresh failed",
-      logErrorRefresh: "Trace graph refresh failed: {msg}"
+      logErrorRefresh: "Trace graph refresh failed: {msg}",
+      demoLogClicked: "Run Conflict Demo clicked",
+      toastDemoRunning: "Running demo…",
+      logErrorMissing: "trigger400Demo handler missing",
+      toastMissingHandler: "Missing demo handler",
+      toastMissingHandlerBody: "trigger400Demo is not defined.",
+      conflictHistoryTitle: "Conflict History",
+      conflictHistoryBadge: "Memory-constrained",
+      conflictBullet1: "Round 2 falsified speed hypothesis",
+      conflictBullet2: "Round 3 recall prevented rollback"
     },
     zh: {
-      pageTitle: "决策记忆 · 用户研究 Agent",
+      pageTitle: "用户研究 Agent · 对话 OS",
       pageSubtitle: "B端售前诊断 → 研究方案路由 → 可执行资产 + 验证口径（不依赖爬虫）",
       tabA: "A. B端客户诊断（售前/立项）",
       tabB: "B. 用户研究交付（定性+定量）",
@@ -530,7 +542,16 @@
       toastNetworkErrorBody: "无法连接后端，请检查 API_BASE。",
       logErrorNetwork: "400 演示期间网络错误",
       toastRefreshFailed: "刷新失败",
-      logErrorRefresh: "Trace Graph 刷新失败：{msg}"
+      logErrorRefresh: "Trace Graph 刷新失败：{msg}",
+      demoLogClicked: "运行冲突演示已点击",
+      toastDemoRunning: "正在运行演示…",
+      logErrorMissing: "trigger400Demo 处理器缺失",
+      toastMissingHandler: "演示处理器缺失",
+      toastMissingHandlerBody: "trigger400Demo 未定义。",
+      conflictHistoryTitle: "冲突历史",
+      conflictHistoryBadge: "Memory-constrained",
+      conflictBullet1: "Round 2 证伪速度假设",
+      conflictBullet2: "Round 3 回溯阻止回退"
     }
   };
 
@@ -604,6 +625,9 @@
     document.getElementById("btn400Demo").textContent = t.btn400Demo;
     const btnConflictDemo = document.getElementById("btnConflictDemo");
     if (btnConflictDemo && !btnConflictDemo.disabled) btnConflictDemo.textContent = t.btnConflictDemo;
+    document.getElementById("conflictHistoryTitle").textContent = t.conflictHistoryTitle;
+    document.getElementById("conflictHistoryBadge").textContent = t.conflictHistoryBadge;
+    if (lastTraceGraphData) renderConflictHistory(lastTraceGraphData, null);
     if (document.getElementById("uiEventLog").textContent === "No events yet." || document.getElementById("uiEventLog").textContent === "暂无事件。") {
       document.getElementById("uiEventLog").textContent = t.uiLogEmpty;
     }
@@ -939,11 +963,12 @@
   }
 
   function renderConflictHistory(graphJson, maybeNodeDetails){
+    const t = I18N[LANG];
     const listEl = document.getElementById("conflictHistoryList");
     const nodes = graphJson && graphJson.nodes ? graphJson.nodes : [];
     const edges = graphJson && graphJson.edges ? graphJson.edges : [];
-    const DEFAULT_BULLET1 = "Round 2 falsified speed hypothesis";
-    const DEFAULT_BULLET2 = "Round 3 recall prevented rollback";
+    const DEFAULT_BULLET1 = t.conflictBullet1;
+    const DEFAULT_BULLET2 = t.conflictBullet2;
     let bullet1 = DEFAULT_BULLET1;
     let bullet2 = DEFAULT_BULLET2;
 
@@ -1078,7 +1103,14 @@
     const origText = btn.textContent;
     btn.disabled = true;
     btn.textContent = t.btnConflictDemoRunning;
+    appendUiLog("demo", t.demoLogClicked);
+    showToast(t.toastDemoRunning, "");
     try {
+      if (typeof trigger400Demo !== "function") {
+        appendUiLog("error", t.logErrorMissing);
+        showToast(t.toastMissingHandler, t.toastMissingHandlerBody);
+        return;
+      }
       appendUiLog("demo", t.demoLogTrigger);
       const r = await do400Request();
       if (!r.ok) {
