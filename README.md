@@ -65,6 +65,15 @@ Decision Memory is an organizational infrastructure where historical evidence an
 
 **Live Demo:** https://userinsightagent.myrawzm0406.online/
 
+## 前端入口与部署说明 / Frontend entry and deployment
+
+- **唯一前端入口文件：** `frontend/index.html`（无构建步骤，纯静态）。
+- **本地预览：** 在项目根目录执行 `start.bat`（Windows）或手动运行：
+  - 后端：`uvicorn backend.app:app --reload --host 127.0.0.1 --port 8000`
+  - 前端：`python -m http.server 5173 --directory frontend`
+  - 浏览器打开：**http://127.0.0.1:5173/index.html**
+- **线上/静态托管：** 若需与 GitHub main 一致，请将托管源指向 **main 分支**，且**站点根目录指向 `frontend` 目录**（或把 `frontend/index.html` 作为首页）。无 dist/build，直接使用 `frontend/index.html`。更新后请拉取最新 main 并刷新部署，避免缓存旧版。
+
 ## How to judge it's memory-driven (not storage)
 
 **Goal:** Let judges know what would go wrong without this memory layer.
