@@ -153,6 +153,15 @@
     }
     .btn-sm { margin-top: 8px; margin-right: 8px; padding: 8px 14px; font-size: 13px; }
     .err-msg { color: var(--bad); font-size: 13px; padding: 12px; }
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: #fff; border: 1px solid var(--blue-main); border-left: 4px solid var(--bad); border-radius: 12px; padding: 16px 20px; min-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); display: flex; justify-content: space-between; gap: 12px; animation: toastIn 0.25s ease; }
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 600; color: var(--bad); margin-bottom: 6px; font-size: 14px; }
+    .toast-msg { font-size: 13px; color: var(--text-main); line-height: 1.5; }
+    .toast-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-sub); padding: 0 4px; line-height: 1; }
+    .toast-close:hover { color: var(--text-main); }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    .ui-event-log { background: #fff; border: 1px dashed var(--silver-border); border-radius: 10px; padding: 12px; font-size: 12px; font-family: monospace; white-space: pre-wrap; max-height: 160px; overflow-y: auto; margin-top: 12px; color: var(--text-sub); }
   </style>
 </head>
 <body>
@@ -164,6 +173,8 @@
   <h1 id="pageTitle">Decision Memory · User Research Agent</h1>
   <p id="pageSubtitle">B2B pre-sales diagnosis → Research plan routing → Actionable assets + validation metrics (no scraping)</p>
 </header>
+
+<div id="toastContainer" class="toast-container" style="display:none;"></div>
 
 <main>
   <div class="tabs">
@@ -260,6 +271,7 @@
         <button class="btn btn-sm" onclick="loadTraceGraph()" id="btnLoadGraph">Load Trace Graph</button>
         <button class="btn btn-sm secondary" onclick="loadDecisionsSnapshots()" id="btnLoadDec">Load Decisions/Snapshots</button>
         <button class="btn btn-sm secondary" onclick="openApiDocs()" id="btnApiDocs">Open API Docs</button>
+        <button class="btn btn-sm" style="border:1px solid var(--bad); color:var(--bad); background:#fff;" onclick="trigger400Demo()" id="btn400Demo">Trigger 400 Demo (Missing Citation)</button>
         <div class="hint" style="margin-top:12px;" id="hintTraceGraph">
           Trace Graph requires Decision Memory backend (uvicorn backend.api.main:app). API needs X-API-Key: admin123.
         </div>
@@ -304,6 +316,7 @@
           <div class="line"><strong id="proofRationaleLabel">Final Decision Rationale:</strong> <span id="proofRationale">—</span></div>
           <div class="hint-text" id="proofHint">If API cannot derive, copy from demo_outputs/demo.log.</div>
         </div>
+        <div class="ui-event-log" id="uiEventLog">No events yet.</div>
         <div class="comparison-module">
           <h3 id="comparisonTitle" style="grid-column:1/-1; margin:0 0 8px; font-size:15px; color:var(--blue-main);">Why this decision requires memory</h3>
           <div class="comparison-col">
@@ -395,7 +408,14 @@
       ],
       comparisonNote: "This is not logging, this is decision constraint. The failure is not a model capability issue—it is the absence of memory constraint.",
       rulesTitle: "Decision Enforcement Rules",
-      rulesFooter: "This system enforces decisions, it does not suggest them."
+      rulesFooter: "This system enforces decisions, it does not suggest them.",
+      btn400Demo: "Trigger 400 Demo (Missing Citation)",
+      toastTitle400: "Decision Rejected (HTTP 400)",
+      toastBody400: "Rule #1 triggered — No Citation, No Decision.",
+      uiLogEmpty: "No events yet.",
+      uiLogRejected400: "Decision rejected due to missing citations.",
+      toastUnexpected: "Unexpected response",
+      toastNetwork: "Network error"
     },
     zh: {
       pageTitle: "决策记忆 · 用户研究 Agent",
@@ -460,7 +480,14 @@
       ],
       comparisonNote: "这不是日志，这是决策约束。错误不是模型能力问题，而是缺失记忆约束。",
       rulesTitle: "决策强制规则",
-      rulesFooter: "本系统强制执行决策，而非建议决策。"
+      rulesFooter: "本系统强制执行决策，而非建议决策。",
+      btn400Demo: "触发 400 演示（缺少援引）",
+      toastTitle400: "决策被拒绝（HTTP 400）",
+      toastBody400: "触发规则一：无援引，不决策。",
+      uiLogEmpty: "暂无事件。",
+      uiLogRejected400: "决策因缺少援引被拒绝。",
+      toastUnexpected: "非预期响应",
+      toastNetwork: "网络错误"
     }
   };
 
@@ -521,6 +548,10 @@
     document.getElementById("comparisonNote").textContent = t.comparisonNote;
     document.getElementById("rulesTitle").textContent = t.rulesTitle;
     document.getElementById("rulesFooter").textContent = t.rulesFooter;
+    document.getElementById("btn400Demo").textContent = t.btn400Demo;
+    if (document.getElementById("uiEventLog").textContent === "No events yet." || document.getElementById("uiEventLog").textContent === "暂无事件。") {
+      document.getElementById("uiEventLog").textContent = t.uiLogEmpty;
+    }
     const withList = document.getElementById("comparisonWithList");
     withList.innerHTML = (t.comparisonWithItems || []).map(s => `<li>${s}</li>`).join("");
     const withoutList = document.getElementById("comparisonWithoutList");
@@ -884,6 +915,49 @@
 
   function openApiDocs(){
     window.open(`${API_BASE}/docs`, '_blank');
+  }
+
+  let toastTimer = null;
+  function showToast(title, body){
+    const c = document.getElementById("toastContainer");
+    c.innerHTML = '<div class="toast"><div class="toast-body"><div class="toast-title">' + (title || '').replace(/</g,'&lt;') + '</div><div class="toast-msg">' + (body || '').replace(/</g,'&lt;') + '</div></div><button class="toast-close" onclick="dismissToast()" aria-label="close">&times;</button></div>';
+    c.style.display = 'block';
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(dismissToast, 3000);
+  }
+  function dismissToast(){
+    if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+    document.getElementById("toastContainer").style.display = 'none';
+  }
+
+  function appendUiLog(type, message){
+    const el = document.getElementById("uiEventLog");
+    const t = I18N[LANG];
+    const prefix = (el.textContent === t.uiLogEmpty || el.textContent === "No events yet." || el.textContent === "暂无事件。") ? "" : el.textContent + "\n";
+    const ts = new Date().toISOString().replace('T',' ').slice(0,19);
+    el.textContent = prefix + `[${ts}] ${type}: ${message}`;
+  }
+
+  async function trigger400Demo(){
+    const t = I18N[LANG];
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/decision`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-API-Key": API_KEY },
+        body: JSON.stringify({ decision_type: "Feature_Pivot", rationale: "Demo test", citations: [], tradeoffs: "" })
+      });
+      if (res.status === 400) {
+        showToast(t.toastTitle400, t.toastBody400);
+        appendUiLog("REJECTED_400", t.uiLogRejected400);
+      } else {
+        const msg = t.toastUnexpected + ": HTTP " + res.status;
+        showToast(msg, "");
+        appendUiLog("UNEXPECTED", msg);
+      }
+    } catch(e) {
+      showToast(t.toastNetwork, e.message || "");
+      appendUiLog("NETWORK_ERROR", (e.message || "Network error"));
+    }
   }
 </script>
 </body>
