@@ -31,7 +31,7 @@
       color: var(--text-main);
     }
     header { padding: 28px 40px 18px; border-bottom: 1px solid var(--silver-border); position: relative; }
-    header h1 { margin: 0; font-size: 26px; color: var(--blue-main); }
+    header h1 { margin: 0; font-size: 26px; color: var(--accent-main); }
     header p { margin-top: 6px; color: var(--text-sub); font-size: 14px; }
     .lang-toggle {
       position: absolute; top: 28px; right: 40px;
@@ -41,8 +41,8 @@
       padding: 6px 12px; border-radius: 8px; border: 1px solid var(--silver-border);
       background: #fff; color: var(--text-sub); cursor: pointer;
     }
-    .lang-btn.active { border-color: var(--blue-main); color: var(--blue-main); background: var(--blue-soft); }
-    .lang-btn:hover { border-color: var(--blue-main); }
+    .lang-btn.active { border-color: var(--accent-main); color: var(--accent-main); background: var(--accent-soft); }
+    .lang-btn:hover { border-color: var(--accent-main); }
     main { padding: 24px 40px 60px; }
     .grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; }
     .card {
@@ -51,7 +51,7 @@
       border-radius: 14px;
       padding: 18px 20px;
     }
-    .card h2 { margin: 0 0 12px; font-size: 18px; color: var(--blue-main); }
+    .card h2 { margin: 0 0 12px; font-size: 18px; color: var(--accent-main); }
     label { display:block; font-size: 13px; margin-top: 12px; margin-bottom: 6px; color: var(--text-sub); }
     select, textarea, input {
       width: 100%;
@@ -75,13 +75,13 @@
       color: var(--text-sub);
       user-select: none;
     }
-    .tab.active { border-color: var(--blue-main); color: var(--blue-main); background: var(--blue-soft); }
+    .tab.active { border-color: var(--accent-main); color: var(--accent-main); background: var(--accent-soft); }
     .btn {
       margin-top: 16px;
       padding: 12px 18px;
       border-radius: 12px;
       border: none;
-      background: var(--blue-main);
+      background: var(--accent-main);
       color: #fff;
       font-size: 14px;
       cursor: pointer;
@@ -102,7 +102,7 @@
     .hint { color: var(--text-sub); font-size: 12px; margin-top: 8px; }
     .small { font-size: 12px; color: var(--text-sub); }
     footer { padding: 22px 40px; border-top: 1px solid var(--silver-border); color: var(--text-sub); font-size: 13px; }
-    a { color: var(--blue-main); text-decoration: none; }
+    a { color: var(--accent-main); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
     .tab-c-only { display: none; }
@@ -129,7 +129,7 @@
     .proof-block .hint-text { color: var(--text-sub); font-size: 12px; margin-top: 10px; }
     .comparison-module { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .comparison-col { background: #fff; border: 1px solid var(--silver-border); border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.55; }
-    .comparison-col h4 { margin: 0 0 10px; font-size: 14px; color: var(--blue-main); }
+    .comparison-col h4 { margin: 0 0 10px; font-size: 14px; color: var(--accent-main); }
     .comparison-col ul { margin: 0; padding-left: 18px; }
     .comparison-col li { margin-bottom: 6px; }
     .comparison-note { margin-top: 10px; font-size: 12px; color: var(--text-sub); font-style: italic; }
@@ -139,8 +139,8 @@
     .rule-item:last-child { margin-bottom: 0; }
     .rule-icon { flex-shrink: 0; font-size: 16px; }
     .rule-text { flex: 1; }
-    .rule-en { margin-bottom: 4px; font-weight: 500; color: var(--text-main); }
-    .rule-zh { font-size: 12px; color: var(--text-sub); }
+    .rule-en, .rule-zh { margin-bottom: 4px; font-weight: 500; color: var(--text-main); }
+    .rule-en.off, .rule-zh.off { display: none; }
     .rules-footer { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--silver-border); font-size: 12px; color: var(--text-sub); font-style: italic; }
     .node-detail {
       background: #fff;
@@ -200,50 +200,33 @@
 
       <div class="row">
         <div>
-          <label id="lblIndustry">Industry</label>
-          <input id="industry" placeholder="例如：美妆护肤 / 营养保健品 / 耐消 / 软件SaaS"/>
+          <label id="lblIndustry">ToB Customization</label>
+          <select id="industry"></select>
         </div>
         <div>
           <label id="lblMarket">Target Market</label>
-          <input id="market" placeholder="例如：北美 / 欧洲 / 东南亚 / 国内"/>
+          <input id="market" placeholder="e.g. North America / Europe / SEA / Domestic"/>
         </div>
       </div>
 
       <label id="lblStage">Company Stage</label>
-      <select id="stage">
-        <option value="0-1（基建/做Demo，尽快验证可行性）">0-1（基建/做Demo，尽快验证可行性）</option>
-        <option value="1-10（已出Demo/早期产品，快速找客户验证商业闭环）">1-10（已出Demo/早期产品，快速找客户验证商业闭环）</option>
-        <option value="10-100（已跑通交易/收入，需规模化增长与效率提升）">10-100（已跑通交易/收入，需规模化增长与效率提升）</option>
-        <option value="成熟期（交易规模/利润稳定，追求更高效率或新增长点）">成熟期（交易规模/利润稳定，追求更高效率或新增长点）</option>
-        <option value="衰颓期（需孵化新业务，探索业务增长的第二曲线）">衰颓期（需孵化新业务，探索业务增长的第二曲线）</option>
-      </select>
+      <select id="stage"></select>
 
       <label id="lblGrowth">Growth Drivers (multi-select, ordered)</label>
-      <textarea id="growth" placeholder="例如：营销驱动增长（Marketing-Led Growth, MLG）&#10;产品驱动增长（Product-Led Growth, PLG）"></textarea>
+      <textarea id="growth" placeholder="e.g. Marketing-Led Growth (MLG)&#10;Product-Led Growth (PLG)"></textarea>
       <div class="hint" id="hintGrowth">Use full names, not abbreviations only.</div>
 
       <label id="lblPositioning">Business Positioning</label>
-      <select id="positioning">
-        <option>新孵化/新业务：方向未完全清晰，需要探索用户与场景</option>
-        <option>旧业务新增长：服务于老业务增长，但新方式效果不确定</option>
-        <option>旧供给找新用户：供给相对成熟，需要找到新目标人群与新表达</option>
-        <option>已验证价值：已有明确需求/供给匹配，需要规模化复制与扩张（做了大概率有效）</option>
-        <option>新供给/新交易场：为一类用户新需求构建新的交易场/新产品线</option>
-      </select>
+      <select id="positioning"></select>
 
       <label id="lblGoal">Goal</label>
-      <select id="goal">
-        <option>提升首单购买转化率</option>
-        <option>提升复购转化率</option>
-        <option>降低退款/退货率</option>
-        <option>提升线索→成交转化率</option>
-      </select>
+      <select id="goal"></select>
 
       <label id="lblProblem">Core Problem (with facts/data)</label>
-      <textarea id="problem" placeholder="例如：买量成本上升，点击不差但加购率低；用户经常说'看不懂差别/不敢买'，弃购率高。"></textarea>
+      <textarea id="problem" placeholder="e.g. CAC up, CTR ok but add-to-cart low; users say 'can't tell difference' — high cart abandonment"></textarea>
 
       <label id="lblConstraints">Constraints (optional)</label>
-      <textarea id="constraints" placeholder="例如：两周内要出结果；不能触达未成年人；不能存储原始音频；预算中等。"></textarea>
+      <textarea id="constraints" placeholder="e.g. results in 2 weeks; no minors; no raw audio storage; mid budget"></textarea>
 
       <button class="btn" onclick="runA()" id="btnRunA">Run A: Diagnose → Research Plan</button>
       <button class="btn secondary" onclick="runB()" id="runBBtn" disabled>Run B: Interview Guide + Survey Draft</button>
@@ -255,7 +238,7 @@
       </div>
 
       <div class="small" style="margin-top:10px;">
-        <span id="apiBaseLabel">API Base:</span> <span id="apiBaseShow">http://127.0.0.1:8000</span>
+        <span id="apiBaseLabel">API Base:</span> <span id="apiBaseShow">https://api.userinsightagent.myrawzm0406.online</span>
         · <a href="#" onclick="setApiBase(); return false;" id="linkSetApi">Set API address</a>
       </div>
     </section>
@@ -276,9 +259,9 @@
       <section class="card">
         <h2 id="tabCOpTitle">Input / Actions</h2>
         <label>topic (optional)</label>
-        <input id="traceTopic" placeholder="例如：fintech"/>
+        <input id="traceTopic" placeholder="e.g. fintech"/>
         <label>stage (optional)</label>
-        <input id="traceStage" placeholder="例如：1-10"/>
+        <input id="traceStage" placeholder="e.g. 1-10"/>
         <button class="btn btn-sm" onclick="loadTraceGraph()" id="btnLoadGraph">Load Trace Graph</button>
         <button class="btn btn-sm secondary" onclick="loadDecisionsSnapshots()" id="btnLoadDec">Load Decisions/Snapshots</button>
         <button class="btn btn-sm secondary" onclick="openApiDocs()" id="btnApiDocs">Open API Docs</button>
@@ -373,7 +356,7 @@
       tabC: "C. Decision Memory (Trace Graph)",
       formTitle: "Input (for Agent)",
       formTitleB: "Input (reuse A)",
-      lblIndustry: "Industry",
+      lblIndustry: "ToB Customization",
       lblMarket: "Target Market",
       lblStage: "Company Stage",
       lblGrowth: "Growth Drivers (multi-select, ordered)",
@@ -457,7 +440,40 @@
       conflictHistoryTitle: "Conflict History",
       conflictHistoryBadge: "Memory-constrained",
       conflictBullet1: "Round 2 falsified speed hypothesis",
-      conflictBullet2: "Round 3 recall prevented rollback"
+      conflictBullet2: "Round 3 recall prevented rollback",
+      industryOptions: [
+        { v: "tob_customization", en: "ToB Customization", zh: "ToB 定制化" },
+        { v: "tob_saas", en: "ToB SaaS", zh: "ToB SaaS" },
+        { v: "toc_single", en: "ToC Single-sided App (e.g., tools/games)", zh: "ToC 单边产品（如工具/游戏）" },
+        { v: "toc_platform", en: "ToC Two-sided Platform (e.g., marketplace/content/social)", zh: "ToC 双边平台（如电商撮合/内容平台/社交平台）" },
+        { v: "agency", en: "Agency (e.g., MCN/talent management/influencer incubator)", zh: "Agency（如MCN/达人艺人经纪/网红孵化）" }
+      ],
+      stageOptions: [
+        { v: "0-1", en: "0-1 (Infrastructure/Demo, validate feasibility)", zh: "0-1（基建/做Demo，尽快验证可行性）" },
+        { v: "1-10", en: "1-10 (Early product, find PMF)", zh: "1-10（已出Demo/早期产品，快速找客户验证商业闭环）" },
+        { v: "10-100", en: "10-100 (Scale growth & efficiency)", zh: "10-100（已跑通交易/收入，需规模化增长与效率提升）" },
+        { v: "mature", en: "Mature (stable, pursue new growth)", zh: "成熟期（交易规模/利润稳定，追求更高效率或新增长点）" },
+        { v: "decline", en: "Decline (incubate new biz, second curve)", zh: "衰颓期（需孵化新业务，探索业务增长的第二曲线）" }
+      ],
+      positioningOptions: [
+        { v: "new_biz", en: "New incubation: direction unclear, explore users & scenarios", zh: "新孵化/新业务：方向未完全清晰，需要探索用户与场景" },
+        { v: "old_growth", en: "Old biz growth: new approach uncertain", zh: "旧业务新增长：服务于老业务增长，但新方式效果不确定" },
+        { v: "old_supply", en: "Mature supply, find new users & expression", zh: "旧供给找新用户：供给相对成熟，需要找到新目标人群与新表达" },
+        { v: "validated", en: "Validated fit, scale replication", zh: "已验证价值：已有明确需求/供给匹配，需要规模化复制与扩张（做了大概率有效）" },
+        { v: "new_market", en: "New supply / new market", zh: "新供给/新交易场：为一类用户新需求构建新的交易场/新产品线" }
+      ],
+      goalOptions: [
+        { v: "first_order", en: "Increase first-order conversion", zh: "提升首单购买转化率" },
+        { v: "repurchase", en: "Increase repurchase conversion", zh: "提升复购转化率" },
+        { v: "refund", en: "Reduce refund/return rate", zh: "降低退款/退货率" },
+        { v: "lead_close", en: "Lead → close conversion", zh: "提升线索→成交转化率" }
+      ],
+      marketPlaceholder: "e.g. North America / Europe / SEA / Domestic",
+      growthPlaceholder: "e.g. Marketing-Led Growth (MLG)\nProduct-Led Growth (PLG)",
+      problemPlaceholder: "e.g. CAC up, CTR ok but add-to-cart low; users say 'can't tell difference' — high cart abandonment",
+      constraintsPlaceholder: "e.g. results in 2 weeks; no minors; no raw audio storage; mid budget",
+      traceTopicPlaceholder: "e.g. fintech",
+      traceStagePlaceholder: "e.g. 1-10"
     },
     zh: {
       pageTitle: "用户研究 Agent · 对话 OS",
@@ -467,7 +483,7 @@
       tabC: "C. Decision Memory 可视化（Trace Graph）",
       formTitle: "输入（给Agent）",
       formTitleB: "输入（沿用A段信息）",
-      lblIndustry: "行业",
+      lblIndustry: "ToB 定制化",
       lblMarket: "目标市场",
       lblStage: "公司阶段",
       lblGrowth: "增长驱动方式（可多选，按主次排序）",
@@ -551,11 +567,44 @@
       conflictHistoryTitle: "冲突历史",
       conflictHistoryBadge: "Memory-constrained",
       conflictBullet1: "Round 2 证伪速度假设",
-      conflictBullet2: "Round 3 回溯阻止回退"
+      conflictBullet2: "Round 3 回溯阻止回退",
+      industryOptions: [
+        { v: "tob_customization", en: "ToB Customization", zh: "ToB 定制化" },
+        { v: "tob_saas", en: "ToB SaaS", zh: "ToB SaaS" },
+        { v: "toc_single", en: "ToC Single-sided App (e.g., tools/games)", zh: "ToC 单边产品（如工具/游戏）" },
+        { v: "toc_platform", en: "ToC Two-sided Platform (e.g., marketplace/content/social)", zh: "ToC 双边平台（如电商撮合/内容平台/社交平台）" },
+        { v: "agency", en: "Agency (e.g., MCN/talent management/influencer incubator)", zh: "Agency（如MCN/达人艺人经纪/网红孵化）" }
+      ],
+      stageOptions: [
+        { v: "0-1", en: "0-1 (Infrastructure/Demo, validate feasibility)", zh: "0-1（基建/做Demo，尽快验证可行性）" },
+        { v: "1-10", en: "1-10 (Early product, find PMF)", zh: "1-10（已出Demo/早期产品，快速找客户验证商业闭环）" },
+        { v: "10-100", en: "10-100 (Scale growth & efficiency)", zh: "10-100（已跑通交易/收入，需规模化增长与效率提升）" },
+        { v: "mature", en: "Mature (stable, pursue new growth)", zh: "成熟期（交易规模/利润稳定，追求更高效率或新增长点）" },
+        { v: "decline", en: "Decline (incubate new biz, second curve)", zh: "衰颓期（需孵化新业务，探索业务增长的第二曲线）" }
+      ],
+      positioningOptions: [
+        { v: "new_biz", en: "New incubation: direction unclear, explore users & scenarios", zh: "新孵化/新业务：方向未完全清晰，需要探索用户与场景" },
+        { v: "old_growth", en: "Old biz growth: new approach uncertain", zh: "旧业务新增长：服务于老业务增长，但新方式效果不确定" },
+        { v: "old_supply", en: "Mature supply, find new users & expression", zh: "旧供给找新用户：供给相对成熟，需要找到新目标人群与新表达" },
+        { v: "validated", en: "Validated fit, scale replication", zh: "已验证价值：已有明确需求/供给匹配，需要规模化复制与扩张（做了大概率有效）" },
+        { v: "new_market", en: "New supply / new market", zh: "新供给/新交易场：为一类用户新需求构建新的交易场/新产品线" }
+      ],
+      goalOptions: [
+        { v: "first_order", en: "Increase first-order conversion", zh: "提升首单购买转化率" },
+        { v: "repurchase", en: "Increase repurchase conversion", zh: "提升复购转化率" },
+        { v: "refund", en: "Reduce refund/return rate", zh: "降低退款/退货率" },
+        { v: "lead_close", en: "Lead → close conversion", zh: "提升线索→成交转化率" }
+      ],
+      marketPlaceholder: "例如：北美 / 欧洲 / 东南亚 / 国内",
+      growthPlaceholder: "例如：营销驱动增长（Marketing-Led Growth, MLG）\n产品驱动增长（Product-Led Growth, PLG）",
+      problemPlaceholder: "例如：买量成本上升，点击不差但加购率低；用户经常说'看不懂差别/不敢买'，弃购率高。",
+      constraintsPlaceholder: "例如：两周内要出结果；不能触达未成年人；不能存储原始音频；预算中等。",
+      traceTopicPlaceholder: "例如：fintech",
+      traceStagePlaceholder: "例如：1-10"
     }
   };
 
-  let LANG = localStorage.getItem("LANG") || "en";
+  let LANG = localStorage.getItem("ui_lang") || "en";
   let CURRENT_DIAGNOSE = null;
   let TAB = 'A';
   function getDefaultApiBase(){
@@ -564,9 +613,8 @@
       if (stored) return stored;
       const o = (typeof window !== "undefined" && window.location && window.location.origin) ? window.location.origin : "";
       if (!o || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(o)) return "http://127.0.0.1:8000";
-      if (/userinsightagent\.myrawzm0406\.online/i.test(o)) return o;
-      return "https://userinsightagent.myrawzm0406.online";
-    } catch(e) { return "http://127.0.0.1:8000"; }
+      return "https://api.userinsightagent.myrawzm0406.online";
+    } catch(e) { return "https://api.userinsightagent.myrawzm0406.online"; }
   }
   let API_BASE = getDefaultApiBase();
   const API_KEY = "admin123";
@@ -575,7 +623,7 @@
 
   function setLang(lang) {
     LANG = lang;
-    localStorage.setItem("LANG", lang);
+    localStorage.setItem("ui_lang", lang);
     document.getElementById("langEn").classList.toggle("active", lang === "en");
     document.getElementById("langZh").classList.toggle("active", lang === "zh");
     applyLang();
@@ -590,13 +638,29 @@
     document.getElementById("tabC").textContent = t.tabC;
     document.getElementById("formTitle").textContent = TAB === 'A' ? t.formTitle : (TAB === 'B' ? t.formTitleB : t.formTitle);
     document.getElementById("lblIndustry").textContent = t.lblIndustry;
+    const industrySel = document.getElementById("industry");
+    const industryOpts = t.industryOptions || [];
+    industrySel.innerHTML = industryOpts.map(o => `<option value="${o.v}">${o[LANG] || o.en}</option>`).join("");
     document.getElementById("lblMarket").textContent = t.lblMarket;
+    document.getElementById("market").placeholder = t.marketPlaceholder || "";
     document.getElementById("lblStage").textContent = t.lblStage;
+    const stageSel = document.getElementById("stage");
+    const stageOpts = t.stageOptions || [];
+    stageSel.innerHTML = stageOpts.map(o => `<option value="${o.v}">${o[LANG] || o.en}</option>`).join("");
     document.getElementById("lblGrowth").textContent = t.lblGrowth;
+    document.getElementById("growth").placeholder = t.growthPlaceholder || "";
     document.getElementById("lblPositioning").textContent = t.lblPositioning;
+    const posSel = document.getElementById("positioning");
+    const posOpts = t.positioningOptions || [];
+    posSel.innerHTML = posOpts.map(o => `<option value="${o.v}">${o[LANG] || o.en}</option>`).join("");
     document.getElementById("lblGoal").textContent = t.lblGoal;
+    const goalSel = document.getElementById("goal");
+    const goalOpts = t.goalOptions || [];
+    goalSel.innerHTML = goalOpts.map(o => `<option value="${o.v}">${o[LANG] || o.en}</option>`).join("");
     document.getElementById("lblProblem").textContent = t.lblProblem;
+    document.getElementById("problem").placeholder = t.problemPlaceholder || "";
     document.getElementById("lblConstraints").textContent = t.lblConstraints;
+    document.getElementById("constraints").placeholder = t.constraintsPlaceholder || "";
     document.getElementById("hintGrowth").textContent = t.hintGrowth;
     document.getElementById("btnRunA").textContent = t.btnRunA;
     document.getElementById("runBBtn").textContent = t.btnRunB;
@@ -609,6 +673,8 @@
     document.getElementById("btnLoadDec").textContent = t.btnLoadDec;
     document.getElementById("btnApiDocs").textContent = t.btnApiDocs;
     document.getElementById("hintTraceGraph").textContent = t.hintTraceGraph;
+    document.getElementById("traceTopic").placeholder = t.traceTopicPlaceholder || "";
+    document.getElementById("traceStage").placeholder = t.traceStagePlaceholder || "";
     document.getElementById("tabCGraphTitle").textContent = t.tabCGraphTitle;
     document.getElementById("graphPlaceholderText").textContent = t.graphPlaceholderText;
     document.getElementById("proofRecallLabel").textContent = t.proofRecallLabel;
@@ -622,6 +688,8 @@
     document.getElementById("comparisonNote").textContent = t.comparisonNote;
     document.getElementById("rulesTitle").textContent = t.rulesTitle;
     document.getElementById("rulesFooter").textContent = t.rulesFooter;
+    document.querySelectorAll(".rule-en").forEach(el => { el.classList.toggle("off", LANG !== "en"); });
+    document.querySelectorAll(".rule-zh").forEach(el => { el.classList.toggle("off", LANG !== "zh"); });
     document.getElementById("btn400Demo").textContent = t.btn400Demo;
     const btnConflictDemo = document.getElementById("btnConflictDemo");
     if (btnConflictDemo && !btnConflictDemo.disabled) btnConflictDemo.textContent = t.btnConflictDemo;
@@ -666,10 +734,10 @@
     const growthText = document.getElementById('growth').value || "";
     const growthList = growthText.split("\n").map(x=>x.trim()).filter(Boolean);
     return {
-      industry: document.getElementById('industry').value || (LANG === 'zh' ? "未填写" : "N/A"),
+      industry: (()=>{ const s=document.getElementById('industry'); return s.value ? (s.options[s.selectedIndex]?.text || s.value) : (LANG === 'zh' ? "未填写" : "N/A"); })(),
       market: document.getElementById('market').value || (LANG === 'zh' ? "未填写" : "N/A"),
       company_stage: document.getElementById('stage').value,
-      growth_driver: growthList.length ? growthList : ["营销驱动增长（Marketing-Led Growth, MLG）"],
+      growth_driver: growthList.length ? growthList : [LANG === 'zh' ? "营销驱动增长（Marketing-Led Growth, MLG）" : "Marketing-Led Growth (MLG)"],
       biz_positioning: document.getElementById('positioning').value,
       core_problem: document.getElementById('problem').value,
       constraints: document.getElementById('constraints').value,
