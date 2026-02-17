@@ -381,7 +381,9 @@
       hintTemplates: "Templates:",
       apiBaseLabel: "API Base:",
       linkSetApi: "Set API address",
-      apiBaseHint: "If you see \"Failed to fetch\", click \"Set API address\" and enter your backend URL (e.g. https://your-ECS-domain:8000). Ensure backend is running, port allowed, and CORS configured.",
+      setApiBasePrompt: "Backend API URL (production: https://api.userinsightagent.myrawzm0406.online, no :8000; local: http://127.0.0.1:8000)",
+      warnNo8000InProduction: "Do not use :8000 in production. Use https://api.userinsightagent.myrawzm0406.online (traffic via Nginx/Cloudflare).",
+      apiBaseHint: "If you see \"Failed to fetch\", click \"Set API address\". Production: https://api.userinsightagent.myrawzm0406.online (no port). Local: http://127.0.0.1:8000. Do not use :8000 for production (traffic goes via Nginx/Cloudflare on 80/443).",
       outTitle: "Output (Actionable Deliverables)",
       outWaiting: "Waiting for input…",
       pill1: "Evidence-first",
@@ -406,7 +408,7 @@
       loading: "Loading…",
       runAProgress: "Running…",
       runBProgress: "Generating B deliverables…",
-      errBackend: "Error:\n{msg}\n\nEnsure backend is running (python backend/app.py) and API address is correct.",
+      errBackend: "Error:\n{msg}\n\nClick \"Set API address\" below to set the backend URL. Production: use https://api.userinsightagent.myrawzm0406.online (no :8000). Local: http://127.0.0.1:8000",
       errRunAFirst: "Please run A first.",
       errLoadGraph: "Load failed: {msg}\n\nCheck: 1) Backend running (uvicorn backend.api.main:app --port 8000); 2) API_BASE correct; 3) /api/v1/trace_graph exists.",
       proofCopyHint: "— (copy from demo.log)",
@@ -531,7 +533,9 @@
       hintTemplates: "模板下载：",
       apiBaseLabel: "后端默认地址：",
       linkSetApi: "设置API地址",
-      apiBaseHint: "若出现「Failed to fetch」，请点击「设置API地址」填写后端完整地址（如 https://你的ECS域名:8000）。并确认：后端已启动、安全组放行端口、CORS 已配置。",
+      setApiBasePrompt: "后端 API 地址（生产环境填 https://api.userinsightagent.myrawzm0406.online，不填 :8000；本机填 http://127.0.0.1:8000）",
+      warnNo8000InProduction: "生产环境不能填 :8000，请使用 https://api.userinsightagent.myrawzm0406.online（流量经 Nginx/Cloudflare）。",
+      apiBaseHint: "若出现「Failed to fetch」，请点击「设置API地址」。生产环境填 https://api.userinsightagent.myrawzm0406.online（不填端口）；本机填 http://127.0.0.1:8000。生产环境不要填 :8000（经 Nginx/Cloudflare 走 80/443）。",
       outTitle: "输出（可执行交付物）",
       outWaiting: "等待输入…",
       pill1: "证据优先",
@@ -556,7 +560,7 @@
       loading: "加载中…",
       runAProgress: "运行中…",
       runBProgress: "生成B段产物中…",
-      errBackend: "出错：\n{msg}\n\n请确认：后端已启动（python backend/app.py），且API地址正确。",
+      errBackend: "出错：\n{msg}\n\n请点击下方「设置API地址」修改后端地址。生产环境填 https://api.userinsightagent.myrawzm0406.online（不要填 :8000，经 Nginx/Cloudflare 走 80/443）；本机填 http://127.0.0.1:8000。",
       errRunAFirst: "请先运行A段。",
       errLoadGraph: "加载失败：{msg}\n\n请检查：1) 后端是否启动（uvicorn backend.api.main:app --port 8000）；2) API_BASE 是否正确；3) /api/v1/trace_graph 是否存在。",
       proofCopyHint: "—（需从 demo.log 复制）",
@@ -804,10 +808,25 @@
     document.getElementById("formTitle").textContent = (t==='A') ? t2.formTitle : (t==='B') ? t2.formTitleB : t2.formTitle;
   }
 
+  function isLocalHost(){
+    try {
+      const h = (typeof window !== "undefined" && window.location && window.location.hostname) ? window.location.hostname : "";
+      return /^(localhost|127\.0\.0\.1)$/i.test(h);
+    } catch(e) { return false; }
+  }
   function setApiBase(){
-    const v = prompt(LANG === 'zh' ? "请输入后端API地址（例如 http://127.0.0.1:8000 ）" : "Enter API base (e.g. http://127.0.0.1:8000)", API_BASE);
+    const t = I18N[LANG];
+    const msg = t.setApiBasePrompt || (LANG === 'zh'
+      ? "后端 API 地址（生产环境填 https://api.userinsightagent.myrawzm0406.online，不填:8000；本机填 http://127.0.0.1:8000）"
+      : "Backend API URL (production: https://api.userinsightagent.myrawzm0406.online, no :8000; local: http://127.0.0.1:8000)");
+    const v = prompt(msg, API_BASE);
     if(!v) return;
-    API_BASE = v.replace(/\/+$/,'');
+    const raw = v.replace(/\/+$/,'').trim();
+    if (!isLocalHost() && raw.indexOf(":8000") !== -1) {
+      alert(t.warnNo8000InProduction || (LANG === 'zh' ? "生产环境不能填 :8000，请使用 https://api.userinsightagent.myrawzm0406.online（流量经 Nginx/Cloudflare）。" : "Do not use :8000 in production. Use https://api.userinsightagent.myrawzm0406.online (traffic via Nginx/Cloudflare)."));
+      return;
+    }
+    API_BASE = raw;
     localStorage.setItem("API_BASE", API_BASE);
     document.getElementById("apiBaseShow").innerText = API_BASE;
   }
@@ -996,7 +1015,7 @@
       updateTraceRunIndexSelect();
       switchTab('B');
     }catch(e){
-      out.innerText = "Error: " + e.message;
+      out.innerText = I18N[LANG].errBackend.replace("{msg}", e.message);
     }
   }
 

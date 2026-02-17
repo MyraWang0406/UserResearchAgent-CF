@@ -75,6 +75,12 @@ Decision Memory is an organizational infrastructure where historical evidence an
   - 浏览器打开：**http://127.0.0.1:5173/index.html**
 - **线上/静态托管：** 若需与 GitHub main 一致，请将托管源指向 **main 分支**，且**站点根目录指向 `frontend` 目录**（或把 `frontend/index.html` 作为首页）。无 dist/build，直接使用 `frontend/index.html`。更新后请拉取最新 main 并刷新部署，避免缓存旧版。
 
+## 验收清单 / Acceptance checklist
+
+- **验收 1：** 打开 https://api.userinsightagent.myrawzm0406.online/docs 返回 **200**（后端 API 文档可访问）。
+- **验收 2：** 打开 https://userinsightagent.myrawzm0406.online，**不设置 API 地址**，点击 Run A / Run B，**不出现 Failed to fetch**（前端默认 API 正确、生产流量经 Nginx/Cloudflare 走 80/443，不直连 8000）。
+- 若出现 Failed to fetch，页面输出区会显示「请点击下方 设置API地址」；生产环境填 https://api.userinsightagent.myrawzm0406.online（不要填 :8000）。
+
 ## How to judge it's memory-driven (not storage)
 
 **Goal:** Let judges know what would go wrong without this memory layer.

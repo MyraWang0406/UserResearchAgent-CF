@@ -29,9 +29,11 @@ git push origin main
 
 ## 3) 线上页面实际使用的文件/构建产物路径
 
-- **唯一前端入口：** `frontend/index.html`
+- **前端入口（二选一，内容一致）：**  
+  - **`frontend/index.html`**（推荐：部署时 Root/Output = `frontend`）  
+  - **根目录 `index.html`**（与 frontend 内容一致，供“以仓库根为站点根”的部署使用）
 - **无构建：** 无 `package.json` 前端构建、无 `dist/` 或 `build/` 产出；CI 仅跑 pytest，无前端打包。
-- **结论：** 线上/静态托管应直接使用 **main 分支下的 `frontend/index.html`**。若线上（如 https://userinsightagent.myrawzm0406.online/ ）仍为旧 UI，说明该站点未从本仓库 main 拉取最新文件或未以 `frontend/index.html` 为入口部署，需在部署侧拉取最新 main 并确保首页指向 `frontend/index.html`（或站点根目录即 `frontend/`）。
+- **结论：** 若部署使用**仓库根目录**为站点根，则首页会读 **根目录 `index.html`**（已与 frontend 一致）。若部署使用 **`frontend`** 为站点根，则首页为 **`frontend/index.html`**。详见 **DEPLOYMENT.md**。
 
 ## 4) 本地可复现验证步骤
 
@@ -58,6 +60,13 @@ git push origin main
    - [ ] **联系作者**：右下角联系作者为黑灰底（#2b2b2b）、白字，hover 更深（#1f1f1f），非蓝色。
 
 5. **（可选）截图：** 对上述四项各截一张图保存，便于与线上对比。
+
+### 线上无痕验收（部署生效后）
+
+1. 打开**无痕/隐私窗口**，访问 **https://userinsightagent.myrawzm0406.online/**（或你配置的线上域名）。
+2. 若部署源为本仓库 main 且目录正确（见 DEPLOYMENT.md），应看到：  
+   - 增长驱动方式为 **checkbox 组**；业务定位含「已论证价值」「旧用户新供给/新交易场」；本次目标含 **HVA** 项；右下角联系作者为**黑灰底**。
+3. 若仍为旧 UI：到 Cloudflare Pages / GitHub Pages 确认 **Connected Repo = MyraWang0406/UserResearchAgent**、**Branch = main**、**Root/Output = `frontend` 或 `/`（根）**，保存后**重新部署**，再强刷/无痕访问。
 
 ## 5) 部署入口说明
 
