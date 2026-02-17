@@ -245,7 +245,7 @@
       </div>
 
       <div class="small" style="margin-top:10px;">
-        <span id="apiBaseLabel">API Base:</span> <span id="apiBaseShow">https://api.userinsightagent.myrawzm0406.online</span>
+        <span id="apiBaseLabel">API Base:</span> <span id="apiBaseShow">https://userresearchagent.up.railway.app</span>
         · <a href="#" onclick="setApiBase(); return false;" id="linkSetApi">Set API address</a>
       </div>
       <div class="hint" id="apiBaseHint" style="margin-top:4px;"></div>
@@ -381,9 +381,9 @@
       hintTemplates: "Templates:",
       apiBaseLabel: "API Base:",
       linkSetApi: "Set API address",
-      setApiBasePrompt: "Backend API URL (production: https://api.userinsightagent.myrawzm0406.online, no :8000; local: http://127.0.0.1:8000)",
-      warnNo8000InProduction: "Do not use :8000 in production. Use https://api.userinsightagent.myrawzm0406.online (traffic via Nginx/Cloudflare).",
-      apiBaseHint: "If you see \"Failed to fetch\", click \"Set API address\". Production: https://api.userinsightagent.myrawzm0406.online (no port). Local: http://127.0.0.1:8000. Do not use :8000 for production (traffic goes via Nginx/Cloudflare on 80/443).",
+      setApiBasePrompt: "Backend API URL (production: your Railway app URL, e.g. https://xxx.up.railway.app; local: http://127.0.0.1:8000)",
+      warnNo8000InProduction: "Do not use :8000 in production. Use your Railway app URL (e.g. https://xxx.up.railway.app).",
+      apiBaseHint: "If you see \"Failed to fetch\", click \"Set API address\". Production: your Railway Public URL (e.g. https://xxx.up.railway.app). Local: http://127.0.0.1:8000.",
       outTitle: "Output (Actionable Deliverables)",
       outWaiting: "Waiting for input…",
       pill1: "Evidence-first",
@@ -408,7 +408,7 @@
       loading: "Loading…",
       runAProgress: "Running…",
       runBProgress: "Generating B deliverables…",
-      errBackend: "Error:\n{msg}\n\nClick \"Set API address\" below to set the backend URL. Production: use https://api.userinsightagent.myrawzm0406.online (no :8000). Local: http://127.0.0.1:8000",
+      errBackend: "Error:\n{msg}\n\nClick \"Set API address\" below. Production: your Railway URL (e.g. https://xxx.up.railway.app). Local: http://127.0.0.1:8000",
       errRunAFirst: "Please run A first.",
       errLoadGraph: "Load failed: {msg}\n\nCheck: 1) Backend running (uvicorn backend.api.main:app --port 8000); 2) API_BASE correct; 3) /api/v1/trace_graph exists.",
       proofCopyHint: "— (copy from demo.log)",
@@ -533,9 +533,9 @@
       hintTemplates: "模板下载：",
       apiBaseLabel: "后端默认地址：",
       linkSetApi: "设置API地址",
-      setApiBasePrompt: "后端 API 地址（生产环境填 https://api.userinsightagent.myrawzm0406.online，不填 :8000；本机填 http://127.0.0.1:8000）",
-      warnNo8000InProduction: "生产环境不能填 :8000，请使用 https://api.userinsightagent.myrawzm0406.online（流量经 Nginx/Cloudflare）。",
-      apiBaseHint: "若出现「Failed to fetch」，请点击「设置API地址」。生产环境填 https://api.userinsightagent.myrawzm0406.online（不填端口）；本机填 http://127.0.0.1:8000。生产环境不要填 :8000（经 Nginx/Cloudflare 走 80/443）。",
+      setApiBasePrompt: "后端 API 地址（生产环境填 Railway 应用 URL，如 https://xxx.up.railway.app；本机填 http://127.0.0.1:8000）",
+      warnNo8000InProduction: "生产环境不能填 :8000，请填 Railway 应用 Public URL（如 https://xxx.up.railway.app）。",
+      apiBaseHint: "若出现「Failed to fetch」，请点击「设置API地址」。生产环境填 Railway 的 Public URL（如 https://xxx.up.railway.app）；本机填 http://127.0.0.1:8000。",
       outTitle: "输出（可执行交付物）",
       outWaiting: "等待输入…",
       pill1: "证据优先",
@@ -560,7 +560,7 @@
       loading: "加载中…",
       runAProgress: "运行中…",
       runBProgress: "生成B段产物中…",
-      errBackend: "出错：\n{msg}\n\n请点击下方「设置API地址」修改后端地址。生产环境填 https://api.userinsightagent.myrawzm0406.online（不要填 :8000，经 Nginx/Cloudflare 走 80/443）；本机填 http://127.0.0.1:8000。",
+      errBackend: "出错：\n{msg}\n\n请点击下方「设置API地址」。生产环境填 Railway 的 Public URL（如 https://xxx.up.railway.app）；本机填 http://127.0.0.1:8000。",
       errRunAFirst: "请先运行A段。",
       errLoadGraph: "加载失败：{msg}\n\n请检查：1) 后端是否启动（uvicorn backend.api.main:app --port 8000）；2) API_BASE 是否正确；3) /api/v1/trace_graph 是否存在。",
       proofCopyHint: "—（需从 demo.log 复制）",
@@ -674,8 +674,8 @@
       if (stored) return stored;
       const o = (typeof window !== "undefined" && window.location && window.location.origin) ? window.location.origin : "";
       if (!o || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(o)) return "http://127.0.0.1:8000";
-      return "https://api.userinsightagent.myrawzm0406.online";
-    } catch(e) { return "https://api.userinsightagent.myrawzm0406.online"; }
+      return "https://userresearchagent.up.railway.app";
+    } catch(e) { return "https://userresearchagent.up.railway.app"; }
   }
   let API_BASE = getDefaultApiBase();
   const API_KEY = "admin123";
@@ -817,13 +817,13 @@
   function setApiBase(){
     const t = I18N[LANG];
     const msg = t.setApiBasePrompt || (LANG === 'zh'
-      ? "后端 API 地址（生产环境填 https://api.userinsightagent.myrawzm0406.online，不填:8000；本机填 http://127.0.0.1:8000）"
-      : "Backend API URL (production: https://api.userinsightagent.myrawzm0406.online, no :8000; local: http://127.0.0.1:8000)");
+      ? "后端 API 地址（生产环境填 Railway 应用 URL，如 https://xxx.up.railway.app；本机填 http://127.0.0.1:8000）"
+      : "Backend API URL (production: your Railway URL e.g. https://xxx.up.railway.app; local: http://127.0.0.1:8000)");
     const v = prompt(msg, API_BASE);
     if(!v) return;
     const raw = v.replace(/\/+$/,'').trim();
     if (!isLocalHost() && raw.indexOf(":8000") !== -1) {
-      alert(t.warnNo8000InProduction || (LANG === 'zh' ? "生产环境不能填 :8000，请使用 https://api.userinsightagent.myrawzm0406.online（流量经 Nginx/Cloudflare）。" : "Do not use :8000 in production. Use https://api.userinsightagent.myrawzm0406.online (traffic via Nginx/Cloudflare)."));
+      alert(t.warnNo8000InProduction || (LANG === 'zh' ? "生产环境不能填 :8000，请填 Railway 应用 Public URL（如 https://xxx.up.railway.app）。" : "Do not use :8000 in production. Use your Railway app URL (e.g. https://xxx.up.railway.app)."));
       return;
     }
     API_BASE = raw;

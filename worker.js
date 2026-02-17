@@ -1,3 +1,4 @@
+// Optional: Cloudflare Worker for custom API proxy. Main deployment: frontend (Pages) calls Railway backend directly; no worker required.
 export default {
     async fetch(request) {
       const url = new URL(request.url)

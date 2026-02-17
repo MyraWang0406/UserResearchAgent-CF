@@ -1,58 +1,64 @@
-# 线上部署证据与结论
+# 部署说明（Railway 后端 + Cloudflare Pages 前端）
 
-## 0. 仓库证据（可验证）
+本仓库**不再使用 ECS**。线上架构：
 
-```bash
-git checkout main && git pull
-git remote -v
-git log -1 --oneline
-```
+- **后端：** Railway（通过 GitHub 连接，push main 自动构建部署）
+- **前端：** GitHub → Cloudflare Pages（连接本仓库，静态站点根目录为 `frontend` 或根目录）
+- **记忆服务：** 后端调用 **EverMemOS Cloud**（通过环境变量 `EVERMEM_URL` 配置）
 
-- **Remote:** `origin` → `https://github.com/MyraWang0406/UserResearchAgent.git`
-- **当前 main 最新 commit:** 见 `git log -1 --oneline` 输出（本次 push 后更新）
+---
 
-## 1. 关键字命中与“线上实际入口”结论
+## 1. 后端部署（Railway）
 
-在仓库内全局搜索下列关键字，命中文件如下：
+1. 登录 [Railway](https://railway.app)，用 GitHub 登录。
+2. **New Project** → **Deploy from GitHub repo** → 选择 `MyraWang0406/UserResearchAgent`。
+3. 根目录已有 `railway.json`，启动命令为：  
+   `uvicorn backend.app:app --host 0.0.0.0 --port $PORT`  
+   Railway 会自动注入 `PORT`，无需改代码。
+4. **环境变量（必配）：**
+   - `EVERMEM_URL`：EverMemOS Cloud 的 API 根地址（例如 `https://your-evermem-cloud.example.com`）。不设则后端以 **Mock 模式** 运行（记忆不持久化）。
+   - 若 EverMem Cloud 需要 API Key，请按 EverMem 文档在请求头或 URL 中配置；本仓库当前通过 `EVERMEM_URL` 区分 Mock/Real。
+5. 部署完成后，在 Railway 项目 **Settings → Domains** 中查看 **Public URL**（形如 `https://xxx.up.railway.app`）。
+6. 若该 URL 与前端默认 `https://userresearchagent.up.railway.app` 不一致，用户需在页面点击「设置API地址」填写实际 Railway URL。
 
-| 关键字 | 命中文件路径 |
-|--------|--------------|
-| B端售前诊断 | `frontend/index.html`, `index.html`（根目录副本） |
-| 增长驱动方式 | `frontend/index.html`, `index.html`, `backend/app.py`, `VERIFICATION.md` |
-| growth_driver | `frontend/index.html`, `index.html`, `backend/logic.py`, `backend/app.py` |
-| 联系作者 | `frontend/index.html`, `index.html`, `VERIFICATION.md` |
-| myrawzm0406@163.com | `frontend/index.html`, `index.html` |
+---
 
-**结论：** 本仓库中**唯一前端页面**即上述包含这些内容的文件：**`frontend/index.html`**。根目录 **`index.html`** 已作为其副本加入，供“以仓库根目录为站点根”的部署使用。
+## 2. 前端部署（Cloudflare Pages）
 
-## 2. 部署配置（本仓库内可查）
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**。
+2. 选择 GitHub 账号下的 **MyraWang0406/UserResearchAgent**，分支 **main**。
+3. **Build 配置：**
+   - **Build command：** 留空或 `echo "static"`（本前端无构建步骤）。
+   - **Build output directory / Root：**
+     - 若选 **Root**：站点根目录为仓库根，首页为根目录的 `index.html`（已与 `frontend/index.html` 同步）。
+     - 若选 **frontend**：站点根目录为 `frontend/`，首页为 `frontend/index.html`。
+4. 保存并部署。之后每次 push 到 main 会自动重新部署。
+5. 部署完成后会得到 `*.pages.dev` 域名；可绑定自定义域名。
 
-- **Cloudflare Pages：** 仓库内**无** `wrangler.toml` 或其它 Cloudflare 配置；无法从代码推断线上项目设置。
-- **GitHub Pages：** 仅存在 `.github/workflows/ci.yml`，为 **CI 测试**（pytest、run_demo），**无** `deploy` / `pages` 等部署步骤。
+---
 
-因此：**线上 https://userinsightagent.myrawzm0406.online/ 的部署源与分支/目录，必须到实际托管平台查看。**
+## 3. 前后端联调
 
-### 你需要在托管侧确认的项（必做）
+- 前端（Cloudflare Pages）默认请求的后端地址为 **`https://userresearchagent.up.railway.app`**（见 `frontend/index.html` 与根目录 `index.html` 中的 `getDefaultApiBase()`）。
+- 若你的 Railway 应用 URL 不同，用户打开前端后点击「设置API地址」，填入 Railway 的 **Public URL** 即可（不要带端口，不要填 `:8000`）。
+- 后端已开启 CORS（`allow_origins=["*"]`），Pages 域名可正常跨域请求 Railway。
 
-- **Cloudflare Pages：**  
-  Dashboard → 该项目 → Settings → Builds & deployments  
-  - **Connected Repository**：是否为 `MyraWang0406/UserResearchAgent`  
-  - **Production branch**：是否为 `main`  
-  - **Build command**：若为静态，可为空或 `echo`  
-  - **Build output directory / Root directory：**  
-    - 若为 **根目录**：应使用 **`/`**（根目录），此时站点会使用仓库根目录的 **`index.html`**（已与 frontend 一致）。  
-    - 若为 **frontend 目录**：应设为 **`frontend`**，此时站点根即 `frontend/`，会使用 **`frontend/index.html`**。
+---
 
-- **GitHub Pages：**  
-  Repo → Settings → Pages  
-  - **Source**：Branch = `main`  
-  - **Folder**：选 **`/frontend`** 或 **`/ (root)`**。若选 root，则使用根目录的 **`index.html`**（已与 frontend 一致）。
+## 4. 仓库内可查的部署相关文件
 
-### 结论（写清楚）
+| 文件 | 说明 |
+|------|------|
+| `railway.json` | Railway 构建与启动命令（Nixpacks + uvicorn） |
+| `frontend/index.html` | 前端单页；内嵌默认 API 与「设置API地址」逻辑 |
+| `index.html` | 根目录副本，供「以根目录为站点根」的 Pages 使用 |
+| `backend/app.py` | FastAPI 应用；已加 CORS，供 Pages 调用 |
+| `backend/core/evermem_client.py` | 记忆客户端；通过 `EVERMEM_URL` 接 EverMemOS Cloud |
 
-- **线上拉取的 Repo：** 应为 **MyraWang0406/UserResearchAgent**（若为其它 repo，则需改为本 repo 或把本 repo 的 frontend 代码迁入被部署的 repo）。  
-- **分支：** 应为 **main**。  
-- **目录：** 二选一——  
-  - **Root 部署**：输出/根目录 = 仓库根目录，则首页即 **根目录 `index.html`**（已与 `frontend/index.html` 内容一致）；  
-  - **Frontend 部署**：输出/根目录 = **`frontend`**，则首页即 **`frontend/index.html`**。  
-- 部署后请**重新部署一次**并**强刷/无痕**访问，避免 CDN 或浏览器缓存旧版。
+---
+
+## 5. 验收（Railway + Pages）
+
+- **后端：** 打开 `https://你的Railway域名/docs`（如 `https://userresearchagent.up.railway.app/docs`）应返回 200，Swagger 可访问。
+- **前端：** 打开 Cloudflare Pages 站点，不设置 API 时默认请求上述 Railway URL；若你的 URL 不同，设置后 Run A / Run B 不应出现 Failed to fetch。
+- **EverMem：** 配置好 `EVERMEM_URL` 后，后端日志应出现 `[EverMemOS] Running in REAL mode: ...`，否则为 Mock 模式。

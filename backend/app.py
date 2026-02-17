@@ -1,5 +1,5 @@
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from .logic import (
@@ -11,6 +11,13 @@ from .logic import (
 )
 
 app = FastAPI(title="User Research Agent (Conversion OS)", version="0.2.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class DiagnoseIn(BaseModel):
     industry: str = Field(..., description="行业，如美妆/营养保健品/SaaS等")

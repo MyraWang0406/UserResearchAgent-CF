@@ -63,23 +63,30 @@ Decision Memory is an organizational infrastructure where historical evidence an
 
 **核心：** 第 3 轮 Recall 到第 2 轮证伪决策，影响最终 rationale，体现「组织记忆」约束新决策。
 
-**Live Demo:** https://userinsightagent.myrawzm0406.online/
+**Live Demo：** 部署后为你的 **Cloudflare Pages** 地址（或自定义域名）。
+
+## 部署架构（已切换为 Railway + Cloudflare Pages，不再使用 ECS）
+
+- **后端：** [Railway](https://railway.app) — 通过 **GitHub 连接**本仓库，push main 自动构建部署；启动命令见 `railway.json`（`uvicorn backend.app:app --host 0.0.0.0 --port $PORT`）。
+- **前端：** **GitHub → Cloudflare Pages** — 连接本仓库，分支 main，站点根目录设为 `frontend` 或根目录（根目录下 `index.html` 已与 frontend 同步）。
+- **记忆服务：** 后端调用 **EverMemOS Cloud**；在 Railway 环境变量中配置 **`EVERMEM_URL`**（EverMem Cloud API 根地址），未配置则后端以 Mock 模式运行。
+- 详见 **[DEPLOYMENT.md](DEPLOYMENT.md)**。
 
 ## 前端入口与部署说明 / Frontend entry and deployment
 
-- **若出现「Failed to fetch」/ 定性定量报错：** 前端请求的是「后端 API 地址」。托管到阿里云 ECS 时：1) 在页面下方点击「设置API地址」；2) 填写你 ECS 上后端的完整地址（如 `https://你的域名:8000` 或 `http://公网IP:8000`）；3) 确认 ECS 上后端已启动（如 `uvicorn backend.app:app --host 0.0.0.0 --port 8000`）、安全组已放行 8000 端口、若用 HTTPS 需配置证书；4) 后端需允许前端域名的 CORS，否则浏览器会报错。
+- **若出现「Failed to fetch」：** 在页面下方点击「设置API地址」，填写 **Railway 应用的 Public URL**（如 `https://xxx.up.railway.app`），不要填 `:8000`。生产环境默认 API 为 `https://userresearchagent.up.railway.app`，若你的 Railway 域名不同请在此处修改。
 - **唯一前端入口文件：** `frontend/index.html`（无构建步骤，纯静态）。
 - **本地预览：** 在项目根目录执行 `start.bat`（Windows）或手动运行：
   - 后端：`uvicorn backend.app:app --reload --host 127.0.0.1 --port 8000`
   - 前端：`python -m http.server 5173 --directory frontend`
   - 浏览器打开：**http://127.0.0.1:5173/index.html**
-- **线上/静态托管：** 若需与 GitHub main 一致，请将托管源指向 **main 分支**，且**站点根目录指向 `frontend` 目录**（或把 `frontend/index.html` 作为首页）。无 dist/build，直接使用 `frontend/index.html`。更新后请拉取最新 main 并刷新部署，避免缓存旧版。
+- **线上：** Cloudflare Pages 连接 GitHub 本仓库 main，根目录选 `frontend` 或 `/`；无 build 步骤，直接部署。
 
 ## 验收清单 / Acceptance checklist
 
-- **验收 1：** 打开 https://api.userinsightagent.myrawzm0406.online/docs 返回 **200**（后端 API 文档可访问）。
-- **验收 2：** 打开 https://userinsightagent.myrawzm0406.online，**不设置 API 地址**，点击 Run A / Run B，**不出现 Failed to fetch**（前端默认 API 正确、生产流量经 Nginx/Cloudflare 走 80/443，不直连 8000）。
-- 若出现 Failed to fetch，页面输出区会显示「请点击下方 设置API地址」；生产环境填 https://api.userinsightagent.myrawzm0406.online（不要填 :8000）。
+- **验收 1：** 部署 Railway 后，打开 **你的 Railway Public URL/docs**（如 `https://userresearchagent.up.railway.app/docs`）返回 **200**（后端 API 文档可访问）。
+- **验收 2：** 部署 Cloudflare Pages 后，打开前端地址，不设置 API 时默认请求上述 Railway URL；若域名不同则点击「设置API地址」填入 Railway URL，Run A / Run B **不出现 Failed to fetch**。
+- 若出现 Failed to fetch，页面会提示「请点击下方 设置API地址」；生产环境填 Railway 的 Public URL（不要填 :8000）。
 
 ## How to judge it's memory-driven (not storage)
 
