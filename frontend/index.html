@@ -1228,30 +1228,33 @@ const API_KEY = "admin123";
     document.getElementById('proofConflict').textContent = 'Detected contradiction with Round 2 Falsification (Decision ID: …) ' + (LANG === 'zh' ? '— 需从 demo.log 复制' : '— copy from demo.log');
     document.getElementById('proofRationale').textContent = 'Conflict Detected: Rejected reverting to speed-focus; maintained quality-focus due to previous falsification. ' + (LANG === 'zh' ? '— 需从 demo.log 复制' : '— copy from demo.log');
   }
+async function loadDecisionsSnapshots(){
+  const t = I18N[LANG];
+  try {
+    const [decRes, snapRes] = await Promise.all([
+      fetch(`${MEMORY_API_BASE}/api/v1/evidence/search`, {
+        headers: { "X-API-Key": API_KEY }
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-  async function loadDecisionsSnapshots(){
-    const t = I18N[LANG];
-    try {
-      const [decRes, snapRes] = await Promise.all([
-        fetch(`${MEMORY_API_BASE}/api/v1/evidence/search`, { headers: { "X-API-Key": API_KEY } })
-        fetch(`${MEMORY_API_BASE}/api/v1/traces`, { headers: { "X-API-Key": API_KEY } })
-      ]);
-      if (decRes || snapRes) {
-        alert(t.alertDecLoaded);
-        if (decRes) console.log('Evidence search:', decRes);
-        if (snapRes) console.log('Traces:', snapRes);
-      } else {
-        alert(t.alertNoEndpoint);
-      }
-    } catch(e) {
-      alert(t.alertLoadFail.replace("{msg}", e.message));
+      fetch(`${MEMORY_API_BASE}/api/v1/traces`, {
+        headers: { "X-API-Key": API_KEY }
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
+    ]);
+
+    if (decRes || snapRes) {
+      alert(t.alertDecLoaded);
+      if (decRes) console.log('Evidence search:', decRes);
+      if (snapRes) console.log('Traces:', snapRes);
+    } else {
+      alert(t.alertNoEndpoint);
     }
+  } catch(e) {
+    alert(t.alertLoadFail.replace("{msg}", e.message));
   }
-
+}
   function openApiDocs(){
-    window.open(`${MEMORY_API_BASE}/docs`, '_blank');
-  }
-
+  window.open(`${MEMORY_API_BASE}/docs`, '_blank');
+}
   let toastTimer = null;
   function showToast(title, body){
     const c = document.getElementById("toastContainer");
