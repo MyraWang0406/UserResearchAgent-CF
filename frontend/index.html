@@ -677,8 +677,11 @@
       return "https://userinsightagent-api.onrender.com";
     } catch(e) { return "https://userinsightagent-api.onrender.com"; }
   }
-  let API_BASE = getDefaultApiBase();
-  const API_KEY = "admin123";
+let API_BASE = getDefaultApiBase(); // A/B 用
+let MEMORY_API_BASE =
+  localStorage.getItem("MEMORY_API_BASE") ||
+  "https://localuserinsightagent-c.onrender.com"; // C 用
+const API_KEY = "admin123";
   let visNetworkInstance = null;
   let lastTraceGraphData = null;
   let runIndex = 0;
@@ -1036,7 +1039,7 @@
   function getTraceGraphUrl(){
     const topic = (document.getElementById('traceTopic').value || '').trim();
     const stage = (document.getElementById('traceStage').value || '').trim();
-    let url = `${API_BASE}/api/v1/trace_graph`;
+    let url = `${MEMORY_API_BASE}/api/v1/trace_graph`;
     const params = [];
     if(topic) params.push('topic='+encodeURIComponent(topic));
     if(stage) params.push('stage='+encodeURIComponent(stage));
@@ -1230,8 +1233,8 @@
     const t = I18N[LANG];
     try {
       const [decRes, snapRes] = await Promise.all([
-        fetch(`${API_BASE}/api/v1/evidence/search`, { headers: { "X-API-Key": API_KEY } }).then(r => r.ok ? r.json() : null).catch(() => null),
-        fetch(`${API_BASE}/api/v1/traces`, { headers: { "X-API-Key": API_KEY } }).then(r => r.ok ? r.json() : null).catch(() => null)
+        fetch(`${MEMORY_API_BASE}/api/v1/evidence/search`, { headers: { "X-API-Key": API_KEY } })
+        fetch(`${MEMORY_API_BASE}/api/v1/traces`, { headers: { "X-API-Key": API_KEY } })
       ]);
       if (decRes || snapRes) {
         alert(t.alertDecLoaded);
@@ -1246,7 +1249,7 @@
   }
 
   function openApiDocs(){
-    window.open(`${API_BASE}/docs`, '_blank');
+    window.open(`${MEMORY_API_BASE}/docs`, '_blank');
   }
 
   let toastTimer = null;
@@ -1271,7 +1274,7 @@
   }
 
   async function do400Request(){
-    const res = await fetch(`${API_BASE}/api/v1/decision`, {
+    const res = await fetch(`${MEMORY_API_BASE}/api/v1/decision`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-API-Key": API_KEY },
       body: JSON.stringify({ decision_type: "Feature_Pivot", rationale: "Demo test", citations: [], tradeoffs: "" })
