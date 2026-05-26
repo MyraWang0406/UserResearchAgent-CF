@@ -1,3 +1,91 @@
+## 🧠 Research Positioning
+
+**Research Problem:**
+In organizational requirements and user research workflows, past decisions — especially falsified hypotheses — are routinely lost when new evidence appears. Teams unknowingly re-introduce arguments that were already disproven, causing requirement regression, inconsistent specifications, and loss of decision integrity.
+
+**Research Question:**
+How can an AI agent remember historical decision evidence and actively constrain future decisions when new input conflicts with previously falsified assumptions?
+
+**Overarching research thread:**
+> AI-assisted decision traceability in organizational and user research workflows
+
+**Relation to other prototypes:**
+- Shares the "evidence citation" mechanism with [CrowdRE 2026](https://github.com/MyraWang0406/CrowdRE2026-Beyond-App-Reviews-Archive) (requirement candidates must trace back to inspectable evidence)
+- Complements [MatrixMirix.WhatIf](https://github.com/MyraWang0406/MatrixMirix.WhatIf) (which handles deliberation before a decision; this handles memory after)
+
+**Informal evaluation:**
+Three-round scenario walkthrough (verifiable from `demo_outputs/demo.log`):
+- Round 1: Interview → Decision v1
+- Round 2: CVR < 2% falsification → Decision v2, flagged `FALSIFIED:true`
+- Round 3: New interview re-introduces the falsified idea → System detects conflict, rejects rollback, maintains quality-first decision
+
+**Limitations:**
+- Tested with simulated scenarios only; not yet validated with real PM teams
+- Falsification detection relies on explicit tagging — implicit contradictions not yet caught
+- LLM recall summaries may vary across runs
+- No comparison baseline established
+
+---
+
+# Decision Memory: Traceable AI-Assisted Requirements Decisions
+
+Decision Memory is an organizational infrastructure where historical evidence and falsification actively constrain future decisions.
+
+决策记忆是一种组织级基础设施，历史证据与被证伪结论会主动约束未来决策。
+
+**Memory Genesis Track 1** · No citation, no decision. Traceable decisions, evolution consistency, organizational memory.
+
+> This is not a static UI demo.
+> The system enforces decision consistency through memory recall, citation, and falsification.
+> Decisions without historical citation are explicitly rejected (400).
+
+## Proof: Memory Influences Decisions
+
+**Purpose:** Prove that recall actually affects new decisions—not just storage. Three hard evidences from `demo_outputs/demo.log`, cross-verifiable.
+
+1. **RecallHits Found: 2 cells** (at least one Decision tagged `FALSIFIED:true`)
+   ```
+   RecallHits Found: 2 cells
+     - [Hit] ID: decision_1771119630.400876 | Tags: ['FALSIFIED:true'] | Summary: Metrics FALSIFY previous speed hypothesis
+     - [Hit] ID: decision_1771119630.39957  | Tags: ['type:decision']  | Summary: Initial requirement generation based on interview
+   ```
+
+2. **Conflict detection references the specific falsification:**
+   ```
+   Conflict Reason: Detected contradiction with Round 2 Falsification
+   (Decision ID: decision_1771119630.400876)
+   ```
+
+3. **Final Decision Rationale** (explicitly rejects requirement rollback):
+   ```
+   Final Decision Rationale: Conflict Detected — Rejected reverting to speed-focus;
+   maintained quality-focus due to previous falsification.
+   ```
+
+## Why This Matters
+
+- **Traceable decisions:** Every decision must cite evidence, forming a complete chain.
+- **Evolution consistency:** Falsified hypotheses are not easily overturned by new interviews; recall affects decisions.
+- **Organizational memory:** Evidence, decisions, requirements, outcomes stored uniformly; supports recall and conflict detection.
+
+## Demo (3 Rounds)
+
+| Round | Type | Description |
+|-------|------|-------------|
+| **Round 1** | Intake | Interview → Evidence → Decision → Requirement v1 |
+| **Round 2** | Falsify | CVR<2% → Outcome → Decision(falsified) → Requirement v2 |
+| **Round 3** | Conflict Recall | New interview mentions "speed" again → Recall → Detect conflict with Round 2 → Reject rollback, maintain quality-first |
+
+## Tech Stack
+
+Python · FastAPI · LLM API (DeepSeek / Zhipu) · JSON memory store · CLI demo runner
+
+## Research Fit
+
+`human-AI collaboration` · `requirements engineering` · `decision traceability` · `organizational memory` · `HCARE` · `CSCW`
+
+
+
 Decision Memory is an organizational infrastructure where historical evidence and falsification actively constrain future decisions.
 
 决策记忆是一种组织级基础设施，历史证据与被证伪结论会主动约束未来决策。
