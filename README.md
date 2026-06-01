@@ -1,205 +1,171 @@
-## 🧠 Research Positioning
-
-**Research Problem:**
-In organizational requirements and user research workflows, past decisions — especially falsified hypotheses — are routinely lost when new evidence appears. Teams unknowingly re-introduce arguments that were already disproven, causing requirement regression, inconsistent specifications, and loss of decision integrity.
-
-**Research Question:**
-How can an AI agent remember historical decision evidence and actively constrain future decisions when new input conflicts with previously falsified assumptions?
-
-**Overarching research thread:**
-> AI-assisted decision traceability in organizational and user research workflows
-
-**Relation to other prototypes:**
-- Shares the "evidence citation" mechanism with [CrowdRE 2026](https://github.com/MyraWang0406/CrowdRE2026-Beyond-App-Reviews-Archive) (requirement candidates must trace back to inspectable evidence)
-- Complements [MatrixMirix.WhatIf](https://github.com/MyraWang0406/MatrixMirix.WhatIf) (which handles deliberation before a decision; this handles memory after)
-
-**Informal evaluation:**
-Three-round scenario walkthrough (verifiable from `demo_outputs/demo.log`):
-- Round 1: Interview → Decision v1
-- Round 2: CVR < 2% falsification → Decision v2, flagged `FALSIFIED:true`
-- Round 3: New interview re-introduces the falsified idea → System detects conflict, rejects rollback, maintains quality-first decision
-
-**Limitations:**
-- Tested with simulated scenarios only; not yet validated with real PM teams
-- Falsification detection relies on explicit tagging — implicit contradictions not yet caught
-- LLM recall summaries may vary across runs
-- No comparison baseline established
-
----
-
 # Decision Memory: Traceable AI-Assisted Requirements Decisions
 
-Decision Memory is an organizational infrastructure where historical evidence and falsification actively constrain future decisions.
+Decision Memory is a research prototype for studying how AI agents can preserve historical evidence, recall falsified assumptions, and constrain future requirements decisions.
 
-决策记忆是一种组织级基础设施，历史证据与被证伪结论会主动约束未来决策。
+The core idea is simple:
 
-**Memory Genesis Track 1** · No citation, no decision. Traceable decisions, evolution consistency, organizational memory.
+> No citation, no decision.
 
-> This is not a static UI demo.
-> The system enforces decision consistency through memory recall, citation, and falsification.
-> Decisions without historical citation are explicitly rejected (400).
+The system treats decision memory as organizational infrastructure. Past evidence, previous decisions, falsified hypotheses, and requirement changes are stored as traceable records that can actively influence later decisions.
+
+## Project Information
+
+| Item | Description |
+|---|---|
+| Status | Research prototype / Competition artifact |
+| Repository | https://github.com/MyraWang0406/UserResearchAgent-CF |
+| Research Area | Requirements Engineering, Human-AI Collaboration, Decision Traceability, Organizational Memory |
+| Main Methods | Evidence citation, decision memory, falsification tracking, conflict recall, scenario walkthrough |
+| Intended Use | Research demonstration, not production deployment |
+
+## Research Positioning
+
+In organizational requirements and user research workflows, past decisions are often lost when new evidence appears. Teams may unknowingly reintroduce ideas that were already tested, rejected, or falsified.
+
+This causes requirement regression, inconsistent specifications, repeated argument cycles, and loss of decision integrity.
+
+This prototype explores whether an AI-assisted decision-memory layer can help teams preserve evidence and prevent falsified assumptions from being casually reintroduced as if they were new insights.
+
+## Research Question
+
+How can an AI agent remember historical decision evidence and actively constrain future decisions when new input conflicts with previously falsified assumptions?
+
+## Overarching Research Thread
+
+This project belongs to a broader research thread:
+
+> AI-assisted decision traceability in organizational and user research workflows.
+
+It focuses on what happens after a decision has been made: how evidence, outcomes, and falsified assumptions can be stored, recalled, and used to constrain future decisions.
+
+## System Overview
+
+The system stores different decision-related artifacts as memory cells:
+
+- evidence
+- decisions
+- requirements
+- outcomes
+- falsification records
+- requirement snapshots
+
+When a new input arrives, the system recalls relevant historical records and checks whether the new proposal conflicts with previous evidence or falsified assumptions.
+
+If a decision lacks proper historical citation, the system can reject it.
+
+## Core Mechanism
+
+```text
+new input
+→ recall historical decisions
+→ identify falsified assumptions
+→ compare with current proposal
+→ detect conflict
+→ cite previous evidence
+→ accept, revise, or reject the new decision
+```
+
+The key point is that memory is not passive storage. Memory actively constrains future decisions.
+
+## Demo Scenario: Three Rounds
+
+| Round | Type | Description |
+|---|---|---|
+| Round 1 | Intake | Interview evidence produces initial decision and Requirement v1 |
+| Round 2 | Falsification | CVR below 2% falsifies the previous speed-focused hypothesis and produces Requirement v2 |
+| Round 3 | Conflict Recall | A new interview reintroduces the speed-focused idea; the system recalls Round 2 falsification and rejects rollback |
+
+The core demonstration is Round 3. The system does not simply store past records. It recalls a falsified decision and uses it to constrain the new decision.
 
 ## Proof: Memory Influences Decisions
 
-**Purpose:** Prove that recall actually affects new decisions—not just storage. Three hard evidences from `demo_outputs/demo.log`, cross-verifiable.
+The demo output provides three pieces of evidence from `demo_outputs/demo.log`.
 
-1. **RecallHits Found: 2 cells** (at least one Decision tagged `FALSIFIED:true`)
-   ```
-   RecallHits Found: 2 cells
-     - [Hit] ID: decision_1771119630.400876 | Tags: ['FALSIFIED:true'] | Summary: Metrics FALSIFY previous speed hypothesis
-     - [Hit] ID: decision_1771119630.39957  | Tags: ['type:decision']  | Summary: Initial requirement generation based on interview
-   ```
+### 1. Recall hits include falsified decisions
 
-2. **Conflict detection references the specific falsification:**
-   ```
-   Conflict Reason: Detected contradiction with Round 2 Falsification
-   (Decision ID: decision_1771119630.400876)
-   ```
+```text
+RecallHits Found: 2 cells
+- [Hit] ID: decision_1771119630.400876 | Tags: ['FALSIFIED:true'] | Summary: Metrics FALSIFY previous speed hypothesis
+- [Hit] ID: decision_1771119630.39957 | Tags: ['type:decision'] | Summary: Initial requirement generation based on interview
+```
 
-3. **Final Decision Rationale** (explicitly rejects requirement rollback):
-   ```
-   Final Decision Rationale: Conflict Detected — Rejected reverting to speed-focus;
-   maintained quality-focus due to previous falsification.
-   ```
+### 2. Conflict detection references the falsification
+
+```text
+Conflict Reason: Detected contradiction with Round 2 Falsification
+Decision ID: decision_1771119630.400876
+```
+
+### 3. Final decision rejects requirement rollback
+
+```text
+Final Decision Rationale:
+Conflict Detected — Rejected reverting to speed-focus;
+maintained quality-focus due to previous falsification.
+```
 
 ## Why This Matters
 
-- **Traceable decisions:** Every decision must cite evidence, forming a complete chain.
-- **Evolution consistency:** Falsified hypotheses are not easily overturned by new interviews; recall affects decisions.
-- **Organizational memory:** Evidence, decisions, requirements, outcomes stored uniformly; supports recall and conflict detection.
+### Traceable decisions
 
-## Demo (3 Rounds)
+Every decision must cite evidence. A decision is not treated as valid unless it can be traced back to prior records.
 
-| Round | Type | Description |
-|-------|------|-------------|
-| **Round 1** | Intake | Interview → Evidence → Decision → Requirement v1 |
-| **Round 2** | Falsify | CVR<2% → Outcome → Decision(falsified) → Requirement v2 |
-| **Round 3** | Conflict Recall | New interview mentions "speed" again → Recall → Detect conflict with Round 2 → Reject rollback, maintain quality-first |
+### Evolution consistency
 
-## Tech Stack
+Falsified hypotheses are not easily overturned by a new interview or isolated comment. The system recalls previous falsification before accepting rollback.
 
-Python · FastAPI · LLM API (DeepSeek / Zhipu) · JSON memory store · CLI demo runner
+### Organizational memory
 
-## Research Fit
+Evidence, decisions, requirements, and outcomes are stored in a unified structure. This supports recall, conflict detection, and decision consistency.
 
-`human-AI collaboration` · `requirements engineering` · `decision traceability` · `organizational memory` · `HCARE` · `CSCW`
+## How to Judge Whether It Is Memory-Driven
 
+A memory-driven system should change its decision behavior based on recalled evidence.
 
+In this demo, Round 3 explicitly references Round 2’s falsified decision ID. Without recall, the system may adopt the new interview and roll back to the earlier speed-focused requirement. With recall, it rejects the rollback and maintains the quality-first decision.
 
-Decision Memory is an organizational infrastructure where historical evidence and falsification actively constrain future decisions.
+This shows that memory is not only stored. It affects the final decision rationale.
 
-决策记忆是一种组织级基础设施，历史证据与被证伪结论会主动约束未来决策。
+## Relation to Other Prototypes
 
-# Decision Memory / 组织决策记忆
+This project is part of my broader research portfolio on traceable AI-assisted decision-making.
 
-**Memory Genesis Track 1** · No citation, no decision. Traceable decisions, evolution consistency, organizational memory.
+- `MatrixMirix.WhatIf` focuses on deliberation before a decision is finalized.
+- `UserResearchAgent-CF` focuses on decision memory after decisions have been made.
+- `CrowdRE2026-Beyond-App-Reviews-Archive` shares the evidence-to-requirement principle, where requirement candidates must trace back to inspectable evidence.
+- `ADX-Mirix-1.15-cursor` applies a similar evidence-to-decision trace principle to automated advertising workflows.
 
-**Memory Genesis Track 1 参赛项目** · 强制「无援引不决策」，实现决策可追溯、需求演化一致性、组织记忆沉淀。
+## Repository Structure
 
-> This is not a static UI demo.
-> The system enforces decision consistency through memory recall, citation, and falsification.
-> Decisions without historical citation are explicitly rejected (400).
+```text
+UserResearchAgent-CF/
+├── backend/              # FastAPI backend and memory logic
+├── frontend/             # Static frontend prototype
+├── scripts/              # Demo runner scripts
+├── tests/                # Test cases
+├── templates/            # Decision and requirement templates
+├── demo_outputs/         # Demo logs and generated artifacts
+├── submission/           # Competition / submission materials
+├── DEPLOYMENT.md         # Deployment notes
+├── VERIFICATION.md       # Verification notes
+├── requirements.txt      # Python dependencies
+└── README.md
+```
 
-> 这不是一个静态页面演示。
-> 系统通过记忆回溯、证据援引与证伪机制，强制保证决策一致性。
-> 任何没有历史证据援引的决策都会被系统显式拒绝（400）。
+## Demo Outputs
 
-## Proof: Memory Influences Decisions
+| File | Description |
+|---|---|
+| `demo_outputs/demo.log` | Three-round demo execution log |
+| `demo_outputs/graph.json` | Trace graph with nodes and edges |
+| `demo_outputs/decisions.json` | Decision cells |
+| `demo_outputs/snapshots.json` | Requirement snapshots |
 
-**Purpose:** Prove that recall actually affects new decisions—not just storage. Three hard evidences from `demo_outputs/demo.log`, cross-verifiable.
+## Quick Start
 
-**本区块目的：** 证明 recall 实际影响了新决策，而非仅存储。以下三条硬证据来自 `demo_outputs/demo.log`，可交叉验证。
-
-1. **RecallHits Found: 2 cells** (at least one Decision tagged `FALSIFIED:true`)
-   **RecallHits Found: 2 cells**（其中至少一条为 `FALSIFIED:true` 的 Decision）
-   ```
-   RecallHits Found: 2 cells
-     - [Hit] ID: decision_1771119630.400876 | Tags: [..., 'FALSIFIED:true', 'type:decision'] | Summary: Metrics FALSIFY previous speed hypothesis....
-     - [Hit] ID: decision_1771119630.39957 | Tags: [..., 'type:decision'] | Summary: Initial requirement generation based on interview....
-   ```
-
-2. **Conflict Reason** (explicitly from Round 2)
-   **Conflict Reason**（明确指出来自 Round 2）
-   ```
-   Conflict Reason: Detected contradiction with Round 2 Falsification (Decision ID: decision_1771119630.400876)
-   ```
-
-3. **Final Decision Rationale** (explicitly rejects requirement rollback)
-   **Final Decision Rationale**（明确拒绝需求回退）
-   ```
-   Final Decision Rationale: Conflict Detected: Rejected reverting to speed-focus; maintained quality-focus due to previous falsification.
-   ```
-
-## Why This Matters / 为什么需要
-
-- **Traceable decisions:** Every decision must cite evidence, forming a complete chain.
-  **决策可追溯：** 每个决策必须援引证据，形成完整溯源链。
-- **Evolution consistency:** Falsified hypotheses are not easily overturned by new interviews; recall affects decisions.
-  **需求演化一致性：** 证伪后的假设不会被新访谈轻易推翻，Recall 影响决策。
-- **Organizational memory:** Evidence, decisions, requirements, outcomes stored uniformly; supports recall and conflict detection.
-  **组织记忆：** 证据、决策、需求、结果统一存储，支持回溯与冲突检测。
-
-## Demo (3 Rounds) / Demo 说明（3 轮）
-
-| Round | Type | Description |
-|------|------|--------------|
-| **Round 1** | Intake | Interview → Evidence → Decision → Requirement v1 |
-| **Round 2** | Falsify | CVR&lt;2% → Outcome → Decision(falsified) → Requirement v2 |
-| **Round 3** | Conflict Recall | New interview mentions "speed" again → Recall historical decisions → Detect conflict with Round 2 falsification → Reject rollback, maintain quality-first |
-
-**Core:** Round 3 recalls Round 2's falsified decision and constrains the final rationale. Organizational memory constrains new decisions.
-
-**核心：** 第 3 轮 Recall 到第 2 轮证伪决策，影响最终 rationale，体现「组织记忆」约束新决策。
-
-**Live Demo：** 部署后为你的 **Cloudflare Pages** 地址（或自定义域名）。
-
-## 部署架构（已切换为 Railway + Cloudflare Pages，不再使用 ECS）
-
-- **后端：** [Railway](https://railway.app) — 通过 **GitHub 连接**本仓库，push main 自动构建部署；启动命令见 `railway.json`（`uvicorn backend.app:app --host 0.0.0.0 --port $PORT`）。
-- **前端：** **GitHub → Cloudflare Pages** — 连接本仓库，分支 main，站点根目录设为 `frontend` 或根目录（根目录下 `index.html` 已与 frontend 同步）。
-- **记忆服务：** 后端调用 **EverMemOS Cloud**；在 Railway 环境变量中配置 **`EVERMEM_URL`**（EverMem Cloud API 根地址），未配置则后端以 Mock 模式运行。
-- 详见 **[DEPLOYMENT.md](DEPLOYMENT.md)**。
-
-## 前端入口与部署说明 / Frontend entry and deployment
-
-- **若出现「Failed to fetch」：** 在页面下方点击「设置API地址」，填写 **Railway 应用的 Public URL**（如 `https://xxx.up.railway.app`），不要填 `:8000`。生产环境默认 API 为 `https://userinsightagent-production.up.railway.app`（当前 Railway 服务地址），若你的 Railway 域名不同请在此处修改。
-- **唯一前端入口文件：** `frontend/index.html`（无构建步骤，纯静态）。
-- **本地预览：** 在项目根目录执行 `start.bat`（Windows）或手动运行：
-  - 后端：`uvicorn backend.app:app --reload --host 127.0.0.1 --port 8000`
-  - 前端：`python -m http.server 5173 --directory frontend`
-  - 浏览器打开：**http://127.0.0.1:5173/index.html**
-- **线上：** Cloudflare Pages 连接 GitHub 本仓库 main，根目录选 `frontend` 或 `/`；无 build 步骤，直接部署。
-
-## 验收清单 / Acceptance checklist
-
-- **验收 1：** 打开 `https://userinsightagent-production.up.railway.app/docs` 返回 **200**（后端 API 文档可访问）。
-- **验收 2：** 打开前端地址，不设置 API 时默认请求上述 Railway URL；Run A / Run B **不出现 Failed to fetch**。
-- 若出现 Failed to fetch，页面会提示「请点击下方 设置API地址」；生产环境填 Railway 的 Public URL（不要填 :8000）。
-
-## How to judge it's memory-driven (not storage)
-
-**Goal:** Let judges know what would go wrong without this memory layer.
-
-**目标：** 让评委知道如果没有这一层 memory，这个系统会做错什么。
-
-1. **Does Round 3's Decision explicitly reference Round 2's falsification Decision ID?**
-   In this demo, `demo.log`'s Conflict Reason explicitly states `Decision ID: decision_1771119630.400876` (Round 2 falsified decision), rationale states "due to previous falsification." Without recall hitting that cell, this reference cannot be produced.
-   **Round 3 的 Decision 是否显式引用 Round 2 的 falsification Decision ID？** 本 Demo 中，`demo.log` 的 Conflict Reason 明确写出 `Decision ID: decision_1771119630.400876`（即 Round 2 证伪决策），rationale 写明「due to previous falsification」。若未通过 recall 命中该 cell，则无法产生此引用。
-
-2. **Without recall of Round 2's falsification, the system may adopt the new interview and roll back requirements.**
-   When the new interview mentions "speed" again, if the system does not run `recall_by_tags` or filter `FALSIFIED:true`, it may directly adopt the new interview and roll back to speed-first. In that case, decisions do not depend on organizational memory—it is storage, not memory-driven.
-   **若未 recall 到 Round 2 的证伪结论，系统可能直接采纳新访谈并回退需求。** 新访谈再次提「速度」时，若系统未执行 `recall_by_tags` 或未筛选 `FALSIFIED:true`，则可能直接采纳新访谈、回退到速度优先，此时决策不依赖组织记忆，仅为 storage 而非 memory-driven。
-
-3. **This demo's implementation:**
-   Uses `recall_by_tags({type: "decision", ...})` to fetch historical decisions, filters `FALSIFIED:true` cells, rejects rollback on conflict, rationale explicitly states "Rejected reverting to speed-focus; maintained quality-focus due to previous falsification."
-   **本 Demo 的实现：** 通过 `recall_by_tags({type: "decision", ...})` 获取历史决策，筛选 `FALSIFIED:true` 的 cell，检测到与新访谈冲突时拒绝回退，rationale 明确说明「Rejected reverting to speed-focus; maintained quality-focus due to previous falsification」。
-
-## Quick Start / 一键运行
-
-### Windows (PowerShell)
+### Windows PowerShell
 
 ```powershell
-cd user_research_agent
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -210,7 +176,6 @@ pytest -q
 ### Mac / Linux
 
 ```bash
-cd user_research_agent
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -218,25 +183,86 @@ python scripts/run_demo.py
 pytest -q
 ```
 
-## demo_outputs / 文件说明
+## Local Frontend and Backend
 
-| File | Description |
-|------|-------------|
-| `demo.log` | 3-round demo execution log |
-| `graph.json` | Trace graph (nodes + edges) |
-| `decisions.json` | All decision cells |
-| `snapshots.json` | Requirement snapshots |
+Run backend:
+
+```bash
+uvicorn backend.app:app --reload --host 127.0.0.1 --port 8000
+```
+
+Run static frontend:
+
+```bash
+python -m http.server 5173 --directory frontend
+```
+
+Open:
+
+```text
+http://127.0.0.1:5173/index.html
+```
+
+## Deployment Notes
+
+The project can be deployed with:
+
+- backend on Railway
+- frontend on Cloudflare Pages
+- optional memory service through EverMemOS Cloud
+
+If the frontend shows `Failed to fetch`, set the API address to the Railway public URL. Do not include `:8000` in the production URL.
+
+See `DEPLOYMENT.md` for details.
 
 ## GitHub Actions
 
-CI runs `pytest -q` and produces `demo_outputs` artifact (demo.log, graph.json, decisions.json, snapshots.json).
+CI runs:
 
-CI 工作流会执行 `pytest -q` 并产出 `demo_outputs` artifact（含 demo.log、graph.json、decisions.json、snapshots.json）。
+```bash
+pytest -q
+```
 
-## Submission Materials / 参赛材料（submission/）
+The workflow can produce `demo_outputs` artifacts, including:
+
+- `demo.log`
+- `graph.json`
+- `decisions.json`
+- `snapshots.json`
+
+## Submission Materials
 
 | File | Description |
-|------|-------------|
-| `submission/DEMO_SCRIPT.md` | 90s / 3min voiceover (EN/ZH) |
-| `submission/ARCHITECTURE.md` | 1-page architecture |
-| `submission/demo_outputs/` | Demo output copy; also downloadable from Actions artifact |
+|---|---|
+| `submission/DEMO_SCRIPT.md` | 90-second / 3-minute voiceover script |
+| `submission/ARCHITECTURE.md` | One-page architecture description |
+| `submission/demo_outputs/` | Demo output copy |
+
+## Evaluation Status
+
+This project currently uses a three-round scenario walkthrough.
+
+It has not yet been validated with real product managers, requirements engineers, or user research teams.
+
+## Current Limitations
+
+- Tested with simulated scenarios only.
+- Falsification detection relies on explicit tagging.
+- Implicit contradictions are not yet reliably detected.
+- LLM recall summaries may vary across runs.
+- No comparison baseline has been established.
+- No formal user study has been conducted.
+
+## Research Fit
+
+`human-AI collaboration` · `requirements engineering` · `decision traceability` · `organizational memory` · `HCARE` · `CSCW`
+
+## Status and Scope
+
+This repository is a research prototype. It is intended to demonstrate how decision memory, evidence citation, and falsification recall can constrain AI-assisted requirements decisions.
+
+It is not a production requirements-management system.
+
+## License
+
+This repository is for research and portfolio demonstration purposes.
